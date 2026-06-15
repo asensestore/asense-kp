@@ -1197,7 +1197,8 @@ async function runAIAdvisor(){
     + '\nВОПРОС: ' + situationMap[situation]
     + '\n\nДай конкретный практический совет 3-5 пунктами. Отвечай на русском, коротко и по делу.';
 
-  var sysPrompt = 'Ты опытный B2B менеджер по продажам Asense — производителя премиальной косметики для HoReCa. Даёшь конкретные практические советы. Без воды, без вступлений, сразу по делу.';
+  var kbCtx = await loadSimilarKB(situation, state.segment || '');
+  var sysPrompt = 'Ты опытный B2B менеджер по продажам Asense — производителя премиальной косметики для HoReCa. Даёшь конкретные практические советы. Без воды, без вступлений, сразу по делу.' + kbCtx;
 
   var result = await groqAsk(prompt, sysPrompt);
   btn.textContent = '🤖 Получить рекомендацию';
@@ -1301,7 +1302,8 @@ async function runClientAI(){
     + '\n\nВОПРОС: ' + situationMap[situation]
     + '\n\nДай 3-4 конкретных пункта. Коротко и по делу, на русском.';
 
-  var result = await groqAsk(prompt, 'Ты опытный B2B менеджер Asense. Отвечай коротко, конкретно, по делу. Без вступлений.');
+  var kbCtx = await loadSimilarKB(situation, state.segment || '');
+  var result = await groqAsk(prompt, 'Ты опытный B2B менеджер Asense. Отвечай коротко, конкретно, по делу. Без вступлений.' + kbCtx);
   btn.textContent = 'Спросить →';
   btn.disabled = false;
 
@@ -1407,7 +1409,8 @@ async function analyzeChat(){
     + '   - Если последним написал менеджер и клиент молчит → напиши новое сообщение которое побудит клиента ответить (не повторяй уже сказанное)\n\n'
     + 'Пиши конкретно и коротко, на русском.';
 
-  var result = await groqAsk(prompt, 'Ты опытный менеджер Asense. Отвечай коротко и конкретно.');
+  var kbCtx = await loadSimilarKB('chat', state.segment || '');
+  var result = await groqAsk(prompt, 'Ты опытный менеджер Asense. Отвечай коротко и конкретно.' + kbCtx);
   btn.textContent = 'Анализировать'; btn.disabled = false;
 
   if(!result){ out.innerHTML = '<div style="color:#e44">Нет ответа. Проверь настройки ИИ.</div>'; out.style.display='block'; return; }
@@ -1441,7 +1444,8 @@ async function pickAroma(){
     + 'Для каждого объясни почему именно он подходит этому заведению (1-2 предложения). '
     + 'Отвечай конкретно, только из каталога выше.';
 
-  var result = await groqAsk(prompt, 'Ты эксперт по ароматам. Рекомендуй только из предложенного каталога. Коротко и убедительно.');
+  var kbCtx = await loadSimilarKB('aroma', state.segment || '');
+  var result = await groqAsk(prompt, 'Ты эксперт по ароматам. Рекомендуй только из предложенного каталога. Коротко и убедительно.' + kbCtx);
   btn.textContent = 'Подобрать'; btn.disabled = false;
 
   if(!result){ out.innerHTML = '<div style="color:#e44">Нет ответа.</div>'; out.style.display='block'; return; }
@@ -1466,7 +1470,7 @@ function renderAIResult(out, result, situation, question){
   out._aiSituation = situation;
   out._aiQuestion = question;
   html += '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">'
-    +'<button class="btn btn-sm" onclick="saveToKB(this)" style="color:var(--green-t);border-color:var(--green-t)">👍 Полезно — в базу знаний</button>'
+    +'<button class="btn btn-sm" onclick="saveToKB(this)" style="color:var(--green-t);border-color:var(--green-t)">👍 В базу знаний</button>'
     +'<button class="btn btn-sm" onclick="copyAIResult()">📋 Копировать</button>'
     +'</div>';
 
@@ -1482,26 +1486,30 @@ async function saveToKB(btn){
   var out = document.getElementById('cai-result');
   var answer = out ? out._aiResult : '';
   var situation = out ? out._aiSituation : '';
-  var question = out ? out._aiQuestion : '';
   if(!answer){ alert('Нет ответа для сохранения'); return; }
 
-  var k = getMgrEmail();
-  var seg = state.segment || '';
+  var catMap = {recommend:'product',upsell:'sales',objection:'objection',competitor:'objection',cold:'script',followup:'script',chat:'script',aroma:'product'};
+  var category = catMap[situation] || 'sales';
+  var title = answer.replace(/\s+/g,' ').trim().substring(0, 50);
+  var content = answer;
 
   btn.textContent = '⏳ Сохраняю...'; btn.disabled = true;
 
-  sbFetch('ai_knowledge', 'POST', {
-    manager_email: k || 'anon',
-    situation: situation,
-    client_segment: seg,
-    question: question,
-    answer: answer,
-    helpful: true
-  }).then(function(){
-    btn.textContent = '✅ Сохранено!';
+  fetch(SB_URL+'/rest/v1/ai_knowledge', {
+    method: 'POST',
+    headers: {
+      'apikey': SB_ANON_KEY,
+      'Authorization': 'Bearer '+SB_ANON_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({category: category, title: title, content: content})
+  }).then(function(r){
+    if(!r.ok) throw new Error(r.status);
+    btn.textContent = '✅ Сохранено';
+    btn.disabled = true;
     btn.style.background = 'var(--green-t)';
     btn.style.color = '#fff';
-    setTimeout(function(){ btn.textContent='👍 Полезно — в базу знаний'; btn.style.background=''; btn.style.color='var(--green-t)'; btn.disabled=false; }, 3000);
   }).catch(function(){
     btn.textContent = '❌ Ошибка'; btn.disabled = false;
   });
@@ -1510,12 +1518,15 @@ async function saveToKB(btn){
 // ===== ЗАГРУЗИТЬ ПОХОЖИЕ КЕЙСЫ ИЗ БД =====
 async function loadSimilarKB(situation, segment){
   try {
-    var r = await sbFetch('ai_knowledge?situation=eq.'+encodeURIComponent(situation)+'&client_segment=eq.'+encodeURIComponent(segment)+'&helpful=eq.true&order=created_at.desc&limit=3');
+    var catMap = {recommend:'product',upsell:'sales',objection:'objection',competitor:'objection',cold:'script',followup:'script',chat:'script',aroma:'product'};
+    var category = catMap[situation] || 'sales';
+    var r = await fetch(SB_URL+'/rest/v1/ai_knowledge?category=eq.'+encodeURIComponent(category)+'&order=created_at.desc&limit=5', {
+      headers: {'apikey': SB_ANON_KEY, 'Authorization': 'Bearer '+SB_ANON_KEY}
+    });
+    if(!r.ok) return '';
     var rows = await r.json();
     if(!rows || !rows.length) return '';
-    return '\n\nПОЛЕЗНЫЙ ОПЫТ КОМАНДЫ:\n' + rows.map(function(r){
-      return '• '+r.answer.substring(0,300);
-    }).join('\n');
+    return '\n\nОПЫТ ИЗ БАЗЫ ЗНАНИЙ КОМАНДЫ:\n' + rows.map(function(row){ return '• '+(row.content||'').substring(0,300); }).join('\n');
   } catch(e){ return ''; }
 }
 
@@ -1954,6 +1965,7 @@ function getTimeAgo(date){
 }
 const SB_URL = 'https://mtotltoanudwuxbvhejl.supabase.co';
 const SB_KEY = 'sb_publishable_tR87NIbBX5gEZaqnZKq9EQ_JjIIDFxf';
+const SB_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10b3RsdG9hbnVkd3V4YnZoZWpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Njk3OTAsImV4cCI6MjA5NjE0NTc5MH0.Gpl8skzkvSmUY3cNiPO0IQbgvhyLjFvMOvs5Spi1Xro';
 
 function sbFetch(path, method, body){
   return fetch(SB_URL+'/rest/v1/'+path,{
