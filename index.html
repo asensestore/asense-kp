@@ -241,8 +241,21 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
   .hist-item > div:last-child{width:100%;flex-wrap:wrap}
   /* Preview fields */
   #sec-preview > div:not(.preview-wrap):not(.notice){grid-template-columns:1fr!important}
-  /* Profile form */
-  #sec-profile > div:first-child + div > div:first-child{grid-template-columns:1fr}
+  /* Preview: kp-doc compact padding + table scroll */
+  .preview-wrap{overflow-x:auto}
+  .kp-doc{padding:14px 12px!important}
+  /* Profile form: fix 2-col → 1-col (was broken selector) */
+  #sec-profile > div > div:nth-child(2) > div:first-child{grid-template-columns:1fr!important}
+  /* AI advisor: 2-col form → 1-col */
+  #sec-ai > div > div:nth-child(2){grid-template-columns:1fr!important}
+  /* Custom KP: client form 2-col → 1-col */
+  #sec-custom > div > div:nth-child(2){grid-template-columns:1fr!important}
+  /* Login box: safe width on very small screens */
+  .login-box{width:min(340px,calc(100vw - 32px))!important}
+  /* Mob more-menu: 3-col grid fits 9 buttons evenly */
+  #mob-menu > div{grid-template-columns:repeat(3,1fr)!important}
+  /* Modals: never wider than screen */
+  [style*="max-width:420px"],[style*="max-width:500px"],[style*="max-width:480px"]{max-width:calc(100vw - 32px)!important;width:calc(100vw - 32px)!important}
   /* Topbar */
   .topbar{padding:8px 10px}
   .btn-gold{font-size:11px}
