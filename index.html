@@ -265,11 +265,16 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 @keyframes drift1{0%{transform:translate(0,0) rotate(0) scale(1)}25%{transform:translate(80px,-60px) rotate(15deg) scale(1.1)}50%{transform:translate(20px,-120px) rotate(-5deg) scale(.9)}75%{transform:translate(-40px,-40px) rotate(10deg) scale(1.05)}100%{transform:translate(0,0) rotate(0) scale(1)}}
 @keyframes drift2{0%{transform:translate(0,0) rotate(0) scale(.9)}33%{transform:translate(-60px,-80px) rotate(-20deg) scale(1)}66%{transform:translate(40px,-30px) rotate(12deg) scale(1.1)}100%{transform:translate(0,0) rotate(0) scale(.9)}}
 @keyframes drift3{0%{transform:translate(0,0) rotate(5deg)}50%{transform:translate(50px,-100px) rotate(-10deg)}100%{transform:translate(0,0) rotate(5deg)}}
-@keyframes floatStar{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+@keyframes floatStar{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-5px) rotate(1deg)}}
+@keyframes wingFlap{0%,100%{transform:scaleX(1)}50%{transform:scaleX(0.1)}}
+@keyframes splashBfExit{to{transform:scale(3.5) translateY(-30px);opacity:0}}
 .butterflies{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.butterflies span{position:absolute;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+.butterflies span{position:absolute;animation-timing-function:ease-in-out;animation-iteration-count:infinite;display:block}
+.bf-svg{stroke:rgba(111,106,101,0.9);stroke-width:0.8;overflow:visible;display:block}
+.bf-left{transform-box:fill-box;transform-origin:100% 50%;animation:wingFlap 2.8s ease-in-out infinite}
+.bf-right{transform-box:fill-box;transform-origin:0% 50%;animation:wingFlap 2.8s ease-in-out infinite}
 .stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.stars span{position:absolute;color:rgba(212,168,67,0.15);animation:floatStar 4s ease infinite}
+.stars span{position:absolute;color:rgba(176,170,160,0.08);animation:floatStar 7s ease infinite}
 
 /* ═══ ORGANIC BORDERS ═══ */
 .seg-btn{border-radius:20px 6px 20px 6px!important;transition:all .3s cubic-bezier(.4,0,.2,1)!important}
@@ -285,6 +290,7 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 
 /* ═══ SPLASH BUTTERFLIES ═══ */
 #splash .butterflies{z-index:2}
+#splash.hide .butterflies span{animation:splashBfExit 0.9s ease forwards!important}
 
 
 </style>
@@ -292,18 +298,18 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 <body>
 <!-- Butterflies decoration -->
 <div class="butterflies">
-  <span style="top:15%;right:12%;font-size:28px;animation:drift1 12s infinite;opacity:.5">🦋</span>
-  <span style="top:55%;left:8%;font-size:22px;animation:drift2 15s infinite;opacity:.35">🦋</span>
-  <span style="top:30%;right:35%;font-size:18px;animation:drift3 18s infinite;opacity:.25">🦋</span>
-  <span style="bottom:25%;right:20%;font-size:24px;animation:drift1 20s infinite 3s;opacity:.3">🦋</span>
-  <span style="top:70%;left:40%;font-size:16px;animation:drift2 14s infinite 5s;opacity:.2">🦋</span>
+  <span style="top:15%;right:12%;animation:drift1 25s infinite;opacity:.12"><svg class="bf-svg" viewBox="-5 0 50 30" fill="none" stroke-linecap="round" stroke-linejoin="round" width="36" height="24"><g class="bf-left"><path d="M20,13 C14,8 4,2 1,6 C-2,10 5,18 20,14"/><path d="M20,16 C14,20 8,25 6,22 C4,19 8,15 20,17"/></g><g class="bf-right"><path d="M20,13 C26,8 36,2 39,6 C42,10 35,18 20,14"/><path d="M20,16 C26,20 32,25 34,22 C36,19 32,15 20,17"/></g><path d="M20,7 Q20,15 20,23" stroke-width="0.5"/><path d="M20,7 C19,5 17,3 15.5,1.5" stroke-width="0.4"/><path d="M20,7 C21,5 23,3 24.5,1.5" stroke-width="0.4"/></svg></span>
+  <span style="top:55%;left:8%;animation:drift2 30s infinite;opacity:.08"><svg class="bf-svg" viewBox="-5 0 50 30" fill="none" stroke-linecap="round" stroke-linejoin="round" width="28" height="18"><g class="bf-left"><path d="M20,13 C14,8 4,2 1,6 C-2,10 5,18 20,14"/><path d="M20,16 C14,20 8,25 6,22 C4,19 8,15 20,17"/></g><g class="bf-right"><path d="M20,13 C26,8 36,2 39,6 C42,10 35,18 20,14"/><path d="M20,16 C26,20 32,25 34,22 C36,19 32,15 20,17"/></g><path d="M20,7 Q20,15 20,23" stroke-width="0.5"/><path d="M20,7 C19,5 17,3 15.5,1.5" stroke-width="0.4"/><path d="M20,7 C21,5 23,3 24.5,1.5" stroke-width="0.4"/></svg></span>
+  <span style="top:30%;right:35%;animation:drift3 35s infinite;opacity:.07"><svg class="bf-svg" viewBox="-5 0 50 30" fill="none" stroke-linecap="round" stroke-linejoin="round" width="22" height="15"><g class="bf-left"><path d="M20,13 C14,8 4,2 1,6 C-2,10 5,18 20,14"/><path d="M20,16 C14,20 8,25 6,22 C4,19 8,15 20,17"/></g><g class="bf-right"><path d="M20,13 C26,8 36,2 39,6 C42,10 35,18 20,14"/><path d="M20,16 C26,20 32,25 34,22 C36,19 32,15 20,17"/></g><path d="M20,7 Q20,15 20,23" stroke-width="0.5"/><path d="M20,7 C19,5 17,3 15.5,1.5" stroke-width="0.4"/><path d="M20,7 C21,5 23,3 24.5,1.5" stroke-width="0.4"/></svg></span>
+  <span style="bottom:25%;right:20%;animation:drift1 28s infinite 4s;opacity:.10"><svg class="bf-svg" viewBox="-5 0 50 30" fill="none" stroke-linecap="round" stroke-linejoin="round" width="30" height="20"><g class="bf-left"><path d="M20,13 C14,8 4,2 1,6 C-2,10 5,18 20,14"/><path d="M20,16 C14,20 8,25 6,22 C4,19 8,15 20,17"/></g><g class="bf-right"><path d="M20,13 C26,8 36,2 39,6 C42,10 35,18 20,14"/><path d="M20,16 C26,20 32,25 34,22 C36,19 32,15 20,17"/></g><path d="M20,7 Q20,15 20,23" stroke-width="0.5"/><path d="M20,7 C19,5 17,3 15.5,1.5" stroke-width="0.4"/><path d="M20,7 C21,5 23,3 24.5,1.5" stroke-width="0.4"/></svg></span>
+  <span style="top:70%;left:40%;animation:drift2 22s infinite 7s;opacity:.06"><svg class="bf-svg" viewBox="-5 0 50 30" fill="none" stroke-linecap="round" stroke-linejoin="round" width="20" height="14"><g class="bf-left"><path d="M20,13 C14,8 4,2 1,6 C-2,10 5,18 20,14"/><path d="M20,16 C14,20 8,25 6,22 C4,19 8,15 20,17"/></g><g class="bf-right"><path d="M20,13 C26,8 36,2 39,6 C42,10 35,18 20,14"/><path d="M20,16 C26,20 32,25 34,22 C36,19 32,15 20,17"/></g><path d="M20,7 Q20,15 20,23" stroke-width="0.5"/><path d="M20,7 C19,5 17,3 15.5,1.5" stroke-width="0.4"/><path d="M20,7 C21,5 23,3 24.5,1.5" stroke-width="0.4"/></svg></span>
 </div>
 <div class="stars">
-  <span style="top:8%;left:15%;font-size:10px;animation-delay:0s">✦</span>
-  <span style="top:20%;right:25%;font-size:14px;animation-delay:1s">✦</span>
-  <span style="top:60%;left:30%;font-size:8px;animation-delay:.5s">✦</span>
-  <span style="top:45%;right:10%;font-size:12px;animation-delay:2s">✧</span>
-  <span style="bottom:15%;left:12%;font-size:16px;animation-delay:3s">✦</span>
+  <span style="top:8%;left:15%;font-size:7px;animation-delay:0s">✦</span>
+  <span style="top:20%;right:25%;font-size:6px;animation-delay:1.3s">✦</span>
+  <span style="top:60%;left:30%;font-size:6px;animation-delay:.7s">✦</span>
+  <span style="top:45%;right:10%;font-size:9px;animation-delay:2.5s">✧</span>
+  <span style="bottom:15%;left:12%;font-size:8px;animation-delay:3.5s">✦</span>
 </div>
 
 <!-- LOGIN -->
@@ -330,9 +336,9 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
   <div class="splash-sub">ГЕНЕРАТОР КП И БАЗА ЗНАНИЙ</div>
   <div class="splash-bar"></div>
   <div class="butterflies">
-  <span style="top:20%;right:15%;font-size:24px;animation:drift1 10s infinite;opacity:.4">🦋</span>
-  <span style="top:60%;left:10%;font-size:20px;animation:drift2 12s infinite;opacity:.3">🦋</span>
-  <span style="top:40%;right:40%;font-size:16px;animation:drift3 15s infinite;opacity:.2">🦋</span>
+  <span style="top:20%;right:15%;animation:drift1 22s infinite;opacity:.22"><svg class="bf-svg" viewBox="-5 0 50 30" fill="none" stroke-linecap="round" stroke-linejoin="round" width="28" height="18"><g class="bf-left"><path d="M20,13 C14,8 4,2 1,6 C-2,10 5,18 20,14"/><path d="M20,16 C14,20 8,25 6,22 C4,19 8,15 20,17"/></g><g class="bf-right"><path d="M20,13 C26,8 36,2 39,6 C42,10 35,18 20,14"/><path d="M20,16 C26,20 32,25 34,22 C36,19 32,15 20,17"/></g><path d="M20,7 Q20,15 20,23" stroke-width="0.5"/><path d="M20,7 C19,5 17,3 15.5,1.5" stroke-width="0.4"/><path d="M20,7 C21,5 23,3 24.5,1.5" stroke-width="0.4"/></svg></span>
+  <span style="top:60%;left:10%;animation:drift2 26s infinite;opacity:.18"><svg class="bf-svg" viewBox="-5 0 50 30" fill="none" stroke-linecap="round" stroke-linejoin="round" width="24" height="16"><g class="bf-left"><path d="M20,13 C14,8 4,2 1,6 C-2,10 5,18 20,14"/><path d="M20,16 C14,20 8,25 6,22 C4,19 8,15 20,17"/></g><g class="bf-right"><path d="M20,13 C26,8 36,2 39,6 C42,10 35,18 20,14"/><path d="M20,16 C26,20 32,25 34,22 C36,19 32,15 20,17"/></g><path d="M20,7 Q20,15 20,23" stroke-width="0.5"/><path d="M20,7 C19,5 17,3 15.5,1.5" stroke-width="0.4"/><path d="M20,7 C21,5 23,3 24.5,1.5" stroke-width="0.4"/></svg></span>
+  <span style="top:40%;right:40%;animation:drift3 24s infinite;opacity:.15"><svg class="bf-svg" viewBox="-5 0 50 30" fill="none" stroke-linecap="round" stroke-linejoin="round" width="20" height="14"><g class="bf-left"><path d="M20,13 C14,8 4,2 1,6 C-2,10 5,18 20,14"/><path d="M20,16 C14,20 8,25 6,22 C4,19 8,15 20,17"/></g><g class="bf-right"><path d="M20,13 C26,8 36,2 39,6 C42,10 35,18 20,14"/><path d="M20,16 C26,20 32,25 34,22 C36,19 32,15 20,17"/></g><path d="M20,7 Q20,15 20,23" stroke-width="0.5"/><path d="M20,7 C19,5 17,3 15.5,1.5" stroke-width="0.4"/><path d="M20,7 C21,5 23,3 24.5,1.5" stroke-width="0.4"/></svg></span>
 </div>
 <div id="splash-hint">НАЖМИТЕ ЧТОБЫ ПРОДОЛЖИТЬ</div>
 </div>
