@@ -22,7 +22,7 @@ body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;font-size:14px;back
 /* LOGIN SCREEN */
 #login-screen{position:fixed;inset:0;z-index:9999;background:var(--dark);display:flex;align-items:center;justify-content:center}
 .login-box{background:#151515;color:#F0EBE0;border-radius:16px;padding:40px 36px;width:340px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
-.login-brand{font-size:30px;font-weight:300;letter-spacing:4px;color:#F0EBE0;margin-bottom:4px}
+.login-brand{font-size:30px;font-weight:300;letter-spacing:-0.02em;color:#F0EBE0;margin-bottom:4px}
 .login-brand em{font-style:italic;color:var(--gold)}
 .login-sub{font-size:10px;color:#999;letter-spacing:1.5px;margin-bottom:28px}
 .login-box input{width:100%;padding:10px 14px;border:1px solid rgba(240,235,224,0.1);border-radius:8px;font-size:14px;margin-bottom:12px;font-family:inherit;outline:none;transition:border-color .15s}
@@ -102,8 +102,8 @@ body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;font-size:14px;back
 .prod-header{display:grid;grid-template-columns:30px 1fr 90px 90px 100px;gap:10px;padding:4px 12px;margin-bottom:4px}
 .prod-col{font-size:10px;color:var(--muted);letter-spacing:.5px}
 .prod-list{display:flex;flex-direction:column;gap:5px}
-.prod-row{display:grid;grid-template-columns:30px 1fr 90px 90px 100px;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);transition:border-color .15s}
-.prod-row:hover{border-color:#bbb}
+.prod-row{display:grid;grid-template-columns:30px 1fr 90px 90px 100px;align-items:center;gap:10px;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);transition:border-color .15s}
+.prod-row:hover{border-color:#bbb;transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,.5)}
 .prod-row.on{border-color:var(--stone);background:rgba(111,106,101,0.08)}
 .prod-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--stone);cursor:pointer}
 .prod-name{font-size:13px}
@@ -142,7 +142,7 @@ body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;font-size:14px;back
 .preview-wrap{background:var(--light);padding:16px;border-radius:8px;border:1px solid var(--border)}
 .kp-doc{background:#fff;color:#1a1a1a;padding:36px 40px;max-width:700px;margin:0 auto;font-size:12.5px;font-family:'Helvetica Neue',Arial,sans-serif}
 .kp-hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;margin-bottom:16px;border-bottom:1px solid #ddd}
-.kp-brand{font-size:26px;font-weight:300;letter-spacing:4px;color:#1a1a1a}
+.kp-brand{font-size:26px;font-weight:300;letter-spacing:-0.01em;color:#1a1a1a}
 .kp-brand em{font-style:italic}
 .kp-brand-sub{font-size:9px;color:#999;letter-spacing:1px;margin-top:3px}
 .kp-req{text-align:right;font-size:9.5px;color:#777;line-height:1.65}
@@ -295,10 +295,10 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 
 
 /* === SECTION ENTER === */
-.sec-enter{animation:fadeUp .3s ease both;will-change:transform}
+.sec-enter{animation:fadeUp .344s ease both;will-change:transform}
 
 /* === PRODUCT ROW CASCADE === */
-.prod-row{animation:fadeUp .3s ease both;animation-delay:calc(var(--i,0)*50ms);will-change:transform}
+.prod-row{animation:fadeUp .344s ease both;animation-delay:calc(var(--i,0)*50ms);will-change:transform}
 
 /* === BUTTON HOVER === */
 .btn-gold{transition:all .25s cubic-bezier(.4,0,.2,1)}
@@ -2571,7 +2571,7 @@ function printKP(){
   body{font-family:'Helvetica Neue',Arial,sans-serif;background:#fff;padding:0}
   .kp-doc{background:#fff;color:#1a1a1a;padding:36px 40px;max-width:720px;margin:0 auto;font-size:12.5px}
   .kp-hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;margin-bottom:14px;border-bottom:1px solid #ddd}
-  .kp-brand{font-size:26px;font-weight:300;letter-spacing:4px}
+  .kp-brand{font-size:26px;font-weight:300;letter-spacing:-0.01em}
   .kp-brand em{font-style:italic}
   .kp-brand-sub{font-size:9px;color:#999;letter-spacing:1px;margin-top:3px}
   .kp-req{text-align:right;font-size:9.5px;color:#777;line-height:1.65}
@@ -2967,7 +2967,7 @@ function previewSave(id){
   body{font-family:'Helvetica Neue',Arial,sans-serif;background:#f4f4f1;padding:20px}
   .kp-doc{background:#fff;color:#1a1a1a;padding:36px 40px;max-width:720px;margin:0 auto;font-size:12.5px}
   .kp-hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;margin-bottom:14px;border-bottom:1px solid #ddd}
-  .kp-brand{font-size:26px;font-weight:300;letter-spacing:4px}.kp-brand em{font-style:italic}
+  .kp-brand{font-size:26px;font-weight:300;letter-spacing:-0.01em}.kp-brand em{font-style:italic}
   .kp-brand-sub{font-size:9px;color:#999;letter-spacing:1px;margin-top:3px}
   .kp-req{text-align:right;font-size:9.5px;color:#777;line-height:1.65}.kp-req strong{color:#1a1a1a}
   .kp-date{font-size:11px;color:#999}.kp-heading{font-size:14px;font-weight:500;text-align:center;margin:12px 0 14px}
@@ -3360,7 +3360,7 @@ function buildCustomKPHtml(){
   return '<!DOCTYPE html><html><head><meta charset="utf-8"><title>КП Asense'+(client?' — '+client:'')+'</title>'
     +'<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;color:#1a1a1a;background:#fff;padding:36px 40px}'
     +'.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:16px;margin-bottom:14px;border-bottom:1px solid #ddd}'
-    +'.brand{font-size:26px;font-weight:300;letter-spacing:4px}.brand em{font-style:italic}'
+    +'.brand{font-size:26px;font-weight:300;letter-spacing:-0.01em}.brand em{font-style:italic}'
     +'.req{text-align:right;font-size:9.5px;color:#777;line-height:1.65}.req strong{color:#1a1a1a}'
     +'table{width:100%;border-collapse:collapse;font-size:12px}'
     +'thead tr{background:#1A1A2E}thead th{padding:8px 10px;color:#fff;font-weight:500;text-align:left}'
