@@ -379,6 +379,7 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
   <div class="nav-item" onclick="go('kb')" id="nav-kb">📚 База знаний</div>
   <div class="nav-item" onclick="go('profile')" id="nav-profile">👤 Мой профиль</div>
 <div class="nav-item" onclick="go('ai')" id="nav-ai">🤖 ИИ-советник</div>
+  <div class="nav-item" onclick="go('training')" id="nav-training">📖 Обучение</div>
   <div class="sidebar-footer">
     <div id="sidebar-user" style="color:var(--gold);font-weight:500;margin-bottom:6px;font-size:12px"></div>
     ООО «АСЕНС»<br>
@@ -892,6 +893,237 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
   </div>
 </div>
 
+<!-- TRAINING -->
+<div id="sec-training" style="display:none">
+  <div style="max-width:720px">
+    <div style="padding:16px 20px;background:var(--dark);border-radius:10px;margin-bottom:20px">
+      <div style="font-size:14px;font-weight:500;color:var(--gold)">📖 Обучение</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:2px">База знаний по ароматам, форматам, продуктам и тактике продаж</div>
+    </div>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap" id="train-tabs">
+      <button class="train-tab active" onclick="switchTrainTab('aromas',this)">Ароматы</button>
+      <button class="train-tab" onclick="switchTrainTab('formats',this)">Форматы</button>
+      <button class="train-tab" onclick="switchTrainTab('prods',this)">Продукты</button>
+      <button class="train-tab" onclick="switchTrainTab('tactics',this)">Тактика продаж</button>
+    </div>
+
+    <!-- Tab: Ароматы -->
+    <div id="train-aromas" class="train-pane">
+
+      <details class="acc">
+        <summary class="acc-sum">Pure Cannabis <span class="acc-badge flag">Флагман</span></summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Ноты</span><span>Грейпфрут, чёрный перец, каннабис</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Дерзкий, провокационный</span></div>
+          <div class="acc-row"><span class="acc-label">В диффузоре</span><span>Тонкий, не навязчивый</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Virgin Lemongrass <span class="acc-badge">Универсальный</span></summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Ноты</span><span>Лемонграсс, вербена, ландыш</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Свежий, универсальный</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">В диффузоре</span><span>⚠️ Не существует — только спрей и жидкое мыло</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Tobacco &amp; Vanilla <span class="acc-badge warm">Единственный тёплый</span></summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Ноты</span><span>Табак, ваниль, имбирь</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Тёплый, мягкий, уютный</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Sea Salt &amp; Wood <span class="acc-badge">Акватический</span></summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Ноты</span><span>Морская соль, дубовый мох</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Акватический, морской</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">Ограничение</span><span>⚠️ В Москве ресторанам нельзя (алкоголь → соль → ассоциации)</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Vetiver &amp; Rosemary <span class="acc-badge push">Пушить в рестораны</span></summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Ноты</span><span>Ветивер, розмарин, petitgrain</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Гастрономический, не перебивает еду</span></div>
+          <div class="acc-row"><span class="acc-label">Тактика</span><span>Основной аргумент — «создан для ресторанов»</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Спа-коллекция <span class="acc-badge">3 аромата</span></summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Hammam</span><span>Чистота, стерильность, баня</span></div>
+          <div class="acc-row"><span class="acc-label">Meditation</span><span>Хедлайнер коллекции — нравится всем</span></div>
+          <div class="acc-row"><span class="acc-label">White Lotus</span><span>Интенсивный, насыщенный</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Oud Wealth <span class="acc-badge warm">Восточный</span></summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Ноты</span><span>Удовое дерево, турецкая роза</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Восточный, роскошный, очень стойкий</span></div>
+        </div>
+      </details>
+
+    </div><!-- /train-aromas -->
+
+    <!-- Tab: Форматы -->
+    <div id="train-formats" class="train-pane" style="display:none">
+      <details class="acc" open>
+        <summary class="acc-sum">Таблица форматов</summary>
+        <div class="acc-body" style="padding:0">
+          <div style="overflow-x:auto">
+            <table class="fmt-table">
+              <thead>
+                <tr><th>Объём</th><th>Тип</th><th>Применение</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>30 мл</td><td>Стекло</td><td>Пробник, travel-формат, премиум</td></tr>
+                <tr><td>100 мл</td><td>Стекло</td><td>Ванная комната, небольшое пространство</td></tr>
+                <tr><td>125 мл</td><td>Стекло</td><td>Диффузор — стандартный формат</td></tr>
+                <tr><td>180 мл</td><td>Стекло</td><td>Увеличенный диффузор</td></tr>
+                <tr><td>250 мл</td><td>Стекло</td><td>Средний объём — отель, ресторан</td></tr>
+                <tr><td>300 мл</td><td>Стекло</td><td>Дозатор — рецепшн, умывальник</td></tr>
+                <tr><td>500 мл</td><td>Стекло</td><td>Профессиональный объём, отель</td></tr>
+                <tr><td>500 мл</td><td>Пластик</td><td>Эконом-вариант, СПА-процедуры</td></tr>
+                <tr><td>1 000 мл</td><td>Стекло / пластик</td><td>Для заправки, большой расход</td></tr>
+                <tr><td>5 000 мл</td><td>Канистра</td><td>Оптовая закупка, централизованный аромадиффузор</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+    </div><!-- /train-formats -->
+
+    <!-- Tab: Продукты -->
+    <div id="train-prods" class="train-pane" style="display:none">
+
+      <details class="acc">
+        <summary class="acc-sum">Шампунь</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Где продавать</span><span>Отели, СПА, фитнес-клубы</span></div>
+          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Профессиональная формула, брендируется под объект</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Кондиционер</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Где продавать</span><span>Отели, СПА — всегда в паре с шампунем</span></div>
+          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Единый аромат-линейка, повышает средний чек</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Жидкое мыло</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Где продавать</span><span>Рестораны, отели, офисы, медцентры</span></div>
+          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Самый высокий оборот — расходник первой необходимости</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Гель для душа</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Где продавать</span><span>Отели, фитнес, СПА</span></div>
+          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Замена одноразовым флаконам — экономия и экология</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Лосьон для тела</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Где продавать</span><span>СПА, отели 4–5★, салоны красоты</span></div>
+          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Финальный штрих после процедуры — запоминается гостем</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Крем-баттер</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Где продавать</span><span>Премиум СПА, бутик-отели, ритейл</span></div>
+          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Высокомаржинальный продукт — люкс-сегмент, подарок гостю</span></div>
+        </div>
+      </details>
+
+    </div><!-- /train-prods -->
+
+    <!-- Tab: Тактика продаж -->
+    <div id="train-tactics" class="train-pane" style="display:none">
+
+      <details class="acc">
+        <summary class="acc-sum">Конкуренты</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Главное</span><span>Не называть конкурентов по имени — только «другие поставщики»</span></div>
+          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Asense — единственный в РФ с полным циклом: разработка, производство, брендирование, доставка</span></div>
+          <div class="acc-row"><span class="acc-label">Слабость конкурентов</span><span>Нет брендирования, китайская база, долгая логистика</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Образцы</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Правило</span><span>Образцы — только после подтверждения интереса и должности ЛПР</span></div>
+          <div class="acc-row"><span class="acc-label">Комплект</span><span>30 мл × 3 аромата на выбор клиента + аромадиффузор 125 мл</span></div>
+          <div class="acc-row"><span class="acc-label">Follow-up</span><span>Звонок через 3 дня — «Как ощущения у команды?»</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Тестовый период</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Длительность</span><span>2 недели — стандартный тест</span></div>
+          <div class="acc-row"><span class="acc-label">Условие</span><span>Клиент оплачивает только расходник; если не понравится — возврат остатка</span></div>
+          <div class="acc-row"><span class="acc-label">Цель</span><span>Снять возражение «нам нужно подумать» — пусть попробуют, а не думают</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Брендирование</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Что предлагаем</span><span>Флакон с логотипом клиента — от 300 шт.</span></div>
+          <div class="acc-row"><span class="acc-label">Срок</span><span>14–21 рабочих день с момента макета</span></div>
+          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Гость забирает флакон домой → бесплатный рекламный носитель</span></div>
+          <div class="acc-row"><span class="acc-label">Маржа</span><span>Брендирование даёт +25–40% к чеку — всегда предлагать</span></div>
+        </div>
+      </details>
+
+    </div><!-- /train-tactics -->
+
+  </div>
+</div><!-- /sec-training -->
+
+<style>
+.train-tab{background:var(--surface);border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;transition:all .2s}
+.train-tab.active{background:var(--gold);color:#111;border-color:var(--gold);font-weight:600}
+.train-pane{}
+.acc{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.acc-sum{padding:13px 16px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text);list-style:none;display:flex;align-items:center;gap:8px;user-select:none}
+.acc-sum::-webkit-details-marker{display:none}
+.acc-sum::before{content:'▶';font-size:9px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+details[open] .acc-sum::before{transform:rotate(90deg)}
+.acc-badge{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.07);color:var(--muted);font-weight:400;margin-left:auto;white-space:nowrap}
+.acc-badge.flag{background:rgba(212,175,55,0.18);color:var(--gold)}
+.acc-badge.warm{background:rgba(200,120,50,0.18);color:#e8954a}
+.acc-badge.push{background:rgba(80,200,120,0.15);color:#5cc87a}
+.acc-body{padding:0 16px 14px;display:flex;flex-direction:column;gap:8px}
+.acc-row{display:flex;gap:10px;font-size:12px;line-height:1.5;color:var(--text)}
+.acc-row.acc-warn{color:#f0a040}
+.acc-label{min-width:110px;color:var(--muted);flex-shrink:0}
+.fmt-table{width:100%;border-collapse:collapse;font-size:12px}
+.fmt-table th{padding:9px 14px;text-align:left;background:var(--dark);color:var(--gold);font-weight:500;font-size:11px;letter-spacing:.5px}
+.fmt-table td{padding:9px 14px;border-top:1px solid var(--border);color:var(--text)}
+.fmt-table tr:hover td{background:rgba(255,255,255,0.03)}
+</style>
+
 </div><!-- /content -->
 </div><!-- /main -->
 </div><!-- /app -->
@@ -918,6 +1150,7 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 <button onclick="go('faq');toggleMobMenu()" class="mob-btn" style="padding:8px 4px"><span class="mob-icon">💬</span><span>FAQ</span></button>
 <button onclick="go('kb');toggleMobMenu()" class="mob-btn" style="padding:8px 4px"><span class="mob-icon">📚</span><span>База</span></button>
 <button onclick="go('profile');toggleMobMenu()" class="mob-btn" style="padding:8px 4px"><span class="mob-icon">👤</span><span>Профиль</span></button>
+<button onclick="go('training');toggleMobMenu()" class="mob-btn" style="padding:8px 4px"><span class="mob-icon">📖</span><span>Обучение</span></button>
 </div>
 </div>
 
@@ -1782,6 +2015,14 @@ function addMiniToExcel(){
 }
 
 
+function switchTrainTab(id, btn){
+  document.querySelectorAll('.train-pane').forEach(function(p){p.style.display='none';});
+  document.querySelectorAll('.train-tab').forEach(function(b){b.classList.remove('active');});
+  var pane = document.getElementById('train-'+id);
+  if(pane) pane.style.display='';
+  if(btn) btn.classList.add('active');
+}
+
 function toggleMobMenu(){
   var menu = document.getElementById('mob-menu');
   var btn = document.getElementById('mob-more');
@@ -2208,8 +2449,8 @@ const SEG_NORMS = {
   fitness:    {soap:3,  lotion:0,  gel:6,  shampoo:5, cond:0, scrub:0},
 };
 function getNorm(id){ var sn=SEG_NORMS[state.segment]; return (sn && sn[id]!==undefined) ? sn[id] : 0; }
-const SECTIONS = ['client','products','preview','history','prices','custom','retail','dashboard','sales','faq','kb','profile','ai'];
-const TITLES   = {client:'Клиент',products:'Продукты',preview:'Предпросмотр КП',history:'История КП',prices:'Прайс — редактор цен',custom:'✏️ Составить КП вручную',retail:'🛍 Ритейл — прайс и КП',dashboard:'📊 Дашборд продаж',sales:'💼 Мои продажи',faq:'FAQ — Частые вопросы',kb:'📚 База знаний отдела продаж',profile:'👤 Профиль менеджера',ai:'🤖 ИИ-советник'};
+const SECTIONS = ['client','products','preview','history','prices','custom','retail','dashboard','sales','faq','kb','profile','ai','training'];
+const TITLES   = {client:'Клиент',products:'Продукты',preview:'Предпросмотр КП',history:'История КП',prices:'Прайс — редактор цен',custom:'✏️ Составить КП вручную',retail:'🛍 Ритейл — прайс и КП',dashboard:'📊 Дашборд продаж',sales:'💼 Мои продажи',faq:'FAQ — Частые вопросы',kb:'📚 База знаний отдела продаж',profile:'👤 Профиль менеджера',ai:'🤖 ИИ-советник',training:'📖 Обучение'};
 
 let state = {
   segment:'restaurant',
