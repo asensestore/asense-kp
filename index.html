@@ -2595,7 +2595,7 @@ function hideSplash(){
   var sp=document.getElementById('splash');
   if(sp&&sp.style.display!=='none'){
     sp.classList.add('splash-closing');
-    setTimeout(function(){sp.style.display='none';sp.classList.remove('splash-closing');},600);
+    setTimeout(function(){sp.style.display='none';sp.classList.remove('splash-closing');},1000);
   }
 }
 
@@ -2604,7 +2604,7 @@ function checkAuthAndInit(){
   if(!user){
     // Show login instead of splash
     document.getElementById('login-screen').style.display='flex';
-    document.getElementById('splash').style.display='none';
+
   }
   // If admin, show admin button in header
   if(localStorage.getItem('asense_admin')==='1'){
@@ -2618,7 +2618,7 @@ function checkAuthAndInit(){
     }
   }
 }
-setTimeout(hideSplash, 2000);
+
 function loadProfile(){
   try{
     var p=JSON.parse(localStorage.getItem('asense_profile')||'{}');
@@ -2637,7 +2637,7 @@ function checkAuth(){
   var user = localStorage.getItem('asense_user');
   if(!user){
     document.getElementById('login-screen').style.display='flex';
-    document.getElementById('splash').style.display='none';
+
   }
 }
 
