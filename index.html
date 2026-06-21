@@ -110,6 +110,11 @@ body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;font-size:14px;back
 .prod-sub{font-size:11px;color:var(--muted);margin-top:1px}
 .num-in{width:44px;padding:5px 4px;border:1px solid var(--border);border-radius:6px;font-size:12px;text-align:center;background:var(--surface);color:var(--text);font-family:inherit}
 .num-in:focus{outline:none;border-color:var(--gold)}
+.price-cell{text-align:right;font-size:12px;cursor:pointer;color:var(--muted);display:inline-flex;align-items:center;gap:3px;justify-content:flex-end;padding:2px 5px;border:1px solid transparent;border-radius:5px;transition:border-color .15s,color .15s;white-space:nowrap;width:100%}
+.price-cell:hover{border-color:var(--border);color:var(--text)}
+.price-cell.price-custom{color:var(--gold);border-color:rgba(212,175,55,.35)}
+.price-pencil{font-size:9px;opacity:.4;flex-shrink:0}
+.price-cell:hover .price-pencil{opacity:.8}
 .qty-wrap{display:flex;align-items:center;gap:2px;justify-content:flex-end}
 .qty-btn{width:22px;height:26px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:0;flex-shrink:0;transition:border-color .15s,color .15s}
 .qty-btn:hover{border-color:var(--gold);color:var(--gold)}
@@ -2692,7 +2697,7 @@ const aromaList  = AROMA_MAP[p.id];
       +'<input type="checkbox"'+(on?' checked':'')+' onchange="'+toggle+'">'
       +'<div><div class="prod-name">'+p.name+'</div><div class="prod-sub">'+(p.vol||p.sub||'')+'</div></div>'
       +'<div style="text-align:center;color:var(--muted);font-size:12px">'+(getNorm(p.id)>0?getNorm(p.id)+' мл':(p.norm>0?p.norm+' мл':(p.vol||'—')))+'</div>'
-      +'<div id="priced-'+p.id+'" onclick="editPrice(\''+p.id+'\',this)" title="Нажмите для изменения цены" style="text-align:right;font-size:12px;cursor:pointer;'+(customPrices[p.id]!==undefined?'color:var(--gold);text-decoration:underline dotted var(--gold)':'color:var(--muted)')+'" >'+fmt(ap)+'</div>'
+      +'<div id="priced-'+p.id+'" onclick="editPrice(\''+p.id+'\',this)" title="Нажмите для изменения цены" class="price-cell'+(customPrices[p.id]!==undefined?' price-custom':'')+'" >'+fmt(ap)+' <span class="price-pencil">✏</span></div>'
       +'<div>'+rightCol+'</div>'
       +aromaHtml
       +'</div>';
