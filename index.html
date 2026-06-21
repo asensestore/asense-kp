@@ -335,6 +335,9 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 .seg-btn:active,.btn-gold:active{transform:scale(.98)}
 
 /* === ACCESSIBILITY === */
+@keyframes fadeScale{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+.login-box{animation:fadeScale .5s cubic-bezier(.4,0,.2,1) both}
+.seg-btn:active,.btn-gold:active,.mob-nav button:active{transform:scale(0.93)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 #deco-bottle{transition:opacity 0.3s}
 @keyframes pumpPress{0%{transform:translateY(0)}30%{transform:translateY(6px)}100%{transform:translateY(0)}}
