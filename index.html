@@ -1169,6 +1169,17 @@ details[open] .acc-sum::before{transform:rotate(90deg)}
 </div><!-- /main -->
 </div><!-- /app -->
 
+<!-- FLOAT SUM BAR -->
+<div id="float-sum" style="display:none;position:fixed;bottom:76px;left:0;right:0;z-index:88;padding:0 12px;pointer-events:none">
+  <div style="pointer-events:auto;background:var(--dark);border:1px solid var(--gold);border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.65)">
+    <div>
+      <div id="float-sum-txt" style="font-size:14px;font-weight:700;color:var(--gold)">—</div>
+      <div id="float-sum-sub" style="font-size:11px;color:var(--muted);margin-top:1px"></div>
+    </div>
+    <button class="btn btn-gold" onclick="goStep(3)" style="white-space:nowrap;padding:7px 14px;font-size:12px">Перейти к КП →</button>
+  </div>
+</div>
+
 <!-- MOBILE BOTTOM NAV -->
 <nav class="mobile-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:var(--dark);border-top:1px solid rgba(255,255,255,0.12);z-index:100;padding:6px 0 10px;box-shadow:0 -4px 20px rgba(0,0,0,0.3)">
 <div style="display:grid;grid-template-columns:repeat(5,1fr);align-items:center;width:100%">
@@ -2593,6 +2604,7 @@ function go(id){
   if(id==='profile') loadProfile();
 if(id==='ai') renderAI();
   updateStepper(id);
+  if(id!=='products'){var fb=document.getElementById('float-sum');if(fb)fb.style.display='none';}
 }
 
 function setSeg(seg, el){
@@ -2757,6 +2769,23 @@ function updateTotals(){
   var elCans=document.getElementById('total-cans'); if(elCans) elCans.textContent=cans||'—';
   var elSum=document.getElementById('total-sum');   if(elSum) elSum.textContent=sum?fmt(sum):'—';
   var elYear=document.getElementById('total-year'); if(elYear) elYear.textContent=sum?fmt(sum*12):'—';
+  // float bar
+  var fb=document.getElementById('float-sum');
+  if(fb){
+    var onProducts=document.getElementById('sec-products')&&document.getElementById('sec-products').style.display!=='none';
+    if(sum>0&&onProducts){
+      var cnt=0;
+      PRODUCTS.forEach(function(p){if(state.checked[p.id])cnt++;});
+      EQUIP.forEach(function(e){if(state.equip[e.id])cnt++;});
+      state.customItems.forEach(function(i){if(i.name)cnt++;});
+      fb.style.display='';
+      var ft=document.getElementById('float-sum-txt'),fs=document.getElementById('float-sum-sub');
+      if(ft) ft.textContent=fmt(sum);
+      if(fs) fs.textContent=cnt+' '+(cnt===1?'позиция':cnt>=2&&cnt<=4?'позиции':'позиций');
+    } else {
+      fb.style.display='none';
+    }
+  }
 }
 
 function recalc(){ renderProducts(); }
