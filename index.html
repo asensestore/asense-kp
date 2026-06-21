@@ -336,6 +336,12 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 
 /* === ACCESSIBILITY === */
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+@keyframes pumpPress{0%{transform:translateY(0)}30%{transform:translateY(4px)}100%{transform:translateY(0)}}
+@keyframes dropFall{0%{opacity:1;transform:translateY(0) scale(1)}70%{opacity:0.6;transform:translateY(60px) scale(0.5)}100%{opacity:0;transform:translateY(80px) scale(0)}}
+.bottle-pump{transform-origin:center top}
+.pump-active .bottle-pump{animation:pumpPress 0.4s cubic-bezier(.4,0,.2,1)}
+.pump-active .bottle-drop{animation:dropFall 0.8s cubic-bezier(.4,0,.2,1) 0.15s both}
+@media(max-width:768px){#deco-bottle{right:8px;bottom:70px;height:120px}}
 </style>
 </head>
 <body>
@@ -386,6 +392,18 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 <div id="splash-hint">НАЖМИТЕ ЧТОБЫ ПРОДОЛЖИТЬ</div>
 </div>
 
+
+<!-- DECO BOTTLE -->
+<div id="deco-bottle" style="position:fixed;z-index:0;pointer-events:none;right:30px;bottom:30px;height:200px;opacity:0.06">
+<svg width="80" height="200" viewBox="0 0 80 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect class="bottle-pump" x="22" y="28" width="36" height="8" rx="4" stroke="rgba(176,170,160,0.9)" stroke-width="1.5"/>
+  <rect class="bottle-pump" x="37" y="36" width="6" height="22" stroke="rgba(176,170,160,0.9)" stroke-width="1.5"/>
+  <rect x="30" y="56" width="20" height="16" rx="2" stroke="rgba(176,170,160,0.9)" stroke-width="1.5"/>
+  <path d="M14 78 Q14 72 30 72 L50 72 Q66 72 66 78 L66 168 Q66 180 54 180 L26 180 Q14 180 14 168 Z" stroke="rgba(176,170,160,0.9)" stroke-width="1.5"/>
+  <rect x="20" y="100" width="40" height="50" rx="3" stroke="rgba(176,170,160,0.5)" stroke-width="1"/>
+  <circle class="bottle-drop" cx="40" cy="62" r="3" fill="rgba(176,170,160,0.8)" opacity="0"/>
+</svg>
+</div>
 <div class="app">
 
 <!-- SIDEBAR -->
@@ -4875,6 +4893,18 @@ var _sideUser = document.getElementById('sidebar-user');
 if(_sideUser && _u) _sideUser.textContent = '👤 ' + _u;
 
 
+
+document.addEventListener('click', function(e){
+  if(e.target.closest('.seg-btn,.btn-gold,.mob-nav button,.tc')){
+    var bottle=document.getElementById('deco-bottle');
+    if(bottle){
+      bottle.classList.remove('pump-active');
+      void bottle.offsetWidth;
+      bottle.classList.add('pump-active');
+      setTimeout(function(){bottle.classList.remove('pump-active');},1000);
+    }
+  }
+});
 </script>
 </body>
 </html>
