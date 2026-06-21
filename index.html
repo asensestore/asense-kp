@@ -339,8 +339,8 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 .login-box{animation:fadeScale .5s cubic-bezier(.4,0,.2,1) both}
 .seg-btn:active,.btn-gold:active,.mob-nav button:active{transform:scale(0.93)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-#deco-bottle{position:fixed;bottom:75px;right:12px;z-index:1;pointer-events:none;width:60px;height:140px;opacity:0.07;transition:opacity 0.3s}
-@media(min-width:769px){#deco-bottle{bottom:30px;right:30px;width:80px;height:180px;opacity:0.05}}
+#deco-bottle{position:fixed;bottom:75px;right:12px;z-index:2;pointer-events:none;width:60px;height:140px;opacity:0.12;transition:opacity 0.3s}
+@media(min-width:769px){#deco-bottle{bottom:30px;right:30px;width:80px;height:180px;opacity:0.12}}
 .b-pump{transform-origin:40px 20px}
 @keyframes pumpDown{0%{transform:translateY(0)}35%{transform:translateY(6px)}100%{transform:translateY(0)}}
 @keyframes squirtOut{0%{opacity:0;transform:translate(0,0) scale(0.5)}20%{opacity:0.8;transform:translate(4px,2px) scale(1)}50%{opacity:0.5;transform:translate(2px,15px) scale(0.8)}80%{opacity:0.2;transform:translate(-2px,35px) scale(0.5)}100%{opacity:0;transform:translate(-4px,55px) scale(0.2)}}
@@ -3062,18 +3062,17 @@ function resetAllProductPrices(){
 }
 
 // Swipe right on mobile = add product to order
-(function(){
-  var sx=0,sy=0;
-  document.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
-  document.addEventListener('touchend',function(e){
-    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
-    if(Math.abs(dy)>Math.abs(dx)||dx<60) return;
-    var row=e.target.closest('.prod-row');
-    if(!row) return;
-    var cb=row.querySelector('input[type=checkbox]');
-    if(cb&&!cb.checked){cb.checked=true;cb.dispatchEvent(new Event('change'));}
-  },{passive:true});
-})();
+document.body.addEventListener('click',function(e){
+  var b=document.getElementById('deco-bottle');
+  if(!b)return;
+  if(e.target.tagName==='BUTTON'||e.target.closest('button,.seg-btn,.btn-gold,.mob-nav div,.tc')){
+    b.classList.remove('pump-go');
+    void b.offsetWidth;
+    b.classList.add('pump-go');
+    b.style.opacity='0.25';
+    setTimeout(function(){b.classList.remove('pump-go');b.style.opacity=''},1200);
+  }
+});
 
 function buildKPHtml(forPrint=false){
   const pvDisc     = document.getElementById('pv-discount');
@@ -4927,18 +4926,6 @@ var _sideUser = document.getElementById('sidebar-user');
 if(_sideUser && _u) _sideUser.textContent = '👤 ' + _u;
 
 
-
-(function(){
-  document.addEventListener('click',function(e){
-    if(!e.target.closest('button,.seg-btn,.btn-gold,.mob-nav *,.tc,[onclick],.prod-row'))return;
-    var b=document.getElementById('deco-bottle');
-    if(!b||b.closest('#splash'))return;
-    b.classList.remove('pump-go');
-    void b.offsetWidth;
-    b.classList.add('pump-go');
-    setTimeout(function(){b.classList.remove('pump-go')},1200);
-  });
-})();
 </script>
 </body>
 </html>
