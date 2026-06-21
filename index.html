@@ -339,17 +339,21 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 .login-box{animation:fadeScale .5s cubic-bezier(.4,0,.2,1) both}
 .seg-btn:active,.btn-gold:active,.mob-nav button:active{transform:scale(0.93)}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-#deco-bottle{transition:opacity 0.3s}
-@keyframes pumpPress{0%{transform:translateY(0)}30%{transform:translateY(6px)}100%{transform:translateY(0)}}
-@keyframes dropFly{0%{r:0;opacity:0;transform:translate(0,0)}15%{r:4;opacity:0.7;transform:translate(2px,0)}50%{r:3;opacity:0.5;transform:translate(8px,20px)}100%{r:1;opacity:0;transform:translate(4px,60px)}}
-@keyframes dropDrip{0%{opacity:0;transform:translateY(0) scaleY(1)}20%{opacity:0.6;transform:translateY(4px) scaleY(1.2)}100%{opacity:0;transform:translateY(50px) scaleY(0.5)}}
-.bottle-pump{transform-origin:center top}
-.pump-active .bottle-pump{animation:pumpPress 0.4s cubic-bezier(.4,0,.2,1)}
-.pump-active .bottle-drop{animation:dropDrip 0.8s cubic-bezier(.4,0,.2,1) 0.15s both}
-@media(max-width:768px){#deco-bottle{bottom:75px;right:12px}}
-@media(min-width:769px){#deco-bottle{bottom:30px;right:30px;opacity:0.08}}
-@keyframes dropAppear{0%{opacity:0;transform:translateY(-20px) scale(0)}40%{opacity:0.8;transform:translateY(0) scale(1)}60%{opacity:0.8;transform:translateY(0) scale(1)}80%{opacity:0.6;transform:translateY(10px) scale(1.3,0.6)}100%{opacity:0;transform:translateY(12px) scale(1.8,0.3)}}
-.splash-drop{opacity:0;animation:dropAppear 1.5s cubic-bezier(.4,0,.2,1) 4s both}
+#deco-bottle{position:fixed;bottom:75px;right:12px;z-index:1;pointer-events:none;width:60px;height:140px;opacity:0.07;transition:opacity 0.3s}
+@media(min-width:769px){#deco-bottle{bottom:30px;right:30px;width:80px;height:180px;opacity:0.05}}
+.b-pump{transform-origin:40px 20px}
+@keyframes pumpDown{0%{transform:translateY(0)}35%{transform:translateY(6px)}100%{transform:translateY(0)}}
+@keyframes squirtOut{0%{opacity:0;transform:translate(0,0) scale(0.5)}20%{opacity:0.8;transform:translate(4px,2px) scale(1)}50%{opacity:0.5;transform:translate(2px,15px) scale(0.8)}80%{opacity:0.2;transform:translate(-2px,35px) scale(0.5)}100%{opacity:0;transform:translate(-4px,55px) scale(0.2)}}
+.pump-go .b-pump{animation:pumpDown 0.4s cubic-bezier(.4,0,.2,1)}
+.pump-go .b-squirt{animation:squirtOut 0.9s cubic-bezier(.4,0,.2,1) 0.1s both}
+.pump-go{opacity:0.2!important}
+@keyframes bottleFill{0%{height:0;y:155}50%{height:90;y:65}60%{height:90;y:65}100%{height:0;y:155}}
+@keyframes bottlePour{0%,50%{transform:rotate(0)}60%{transform:rotate(-30deg)}80%{transform:rotate(-30deg)}100%{transform:rotate(0)}}
+.bottle-loading{opacity:0.15!important}
+.bottle-loading svg{animation:bottlePour 2.5s cubic-bezier(.4,0,.2,1) infinite;transform-origin:40px 155px}
+.bottle-loading .b-liquid{animation:bottleFill 2.5s cubic-bezier(.4,0,.2,1) infinite}
+.splash-drop-anim{position:absolute;top:-50px;left:50%;transform:translateX(-50%);z-index:10;opacity:0;animation:splashDrop 1.5s cubic-bezier(.55,.09,.68,.53) 4.5s both}
+@keyframes splashDrop{0%{opacity:0;top:-50px;transform:translateX(-50%) scale(1)}10%{opacity:0.8}70%{top:calc(100vh - 100px);transform:translateX(-50%) scale(1);opacity:0.8}85%{top:calc(100vh - 60px);transform:translateX(-50%) scaleX(2) scaleY(0.3);opacity:0.6}100%{top:calc(100vh - 40px);transform:translateX(-50%) scaleX(4) scaleY(0.05);opacity:0}}
 </style>
 </head>
 <body>
@@ -387,29 +391,40 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
   </div>
 </div>
 
-<div id="splash" onclick="hideSplash()">
+<div id="splash">
   <div class="splash-bg"></div>
   <div class="splash-overlay"></div>
   <img src="data:image/png;base64,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" style="max-width:180px">
   <div class="splash-sub">small rituals · big self-care moments</div>
-  <div class="splash-drop" style="position:relative;z-index:2;margin-top:16px"><svg width="20" height="28" viewBox="0 0 20 28"><path d="M10 0 C10 0 0 14 0 18 C0 24 4.5 28 10 28 C15.5 28 20 24 20 18 C20 14 10 0 10 0Z" fill="rgba(176,170,160,0.4)"/></svg></div>
-<div id="splash-hint">нажмите чтобы продолжить</div>
+<div class="splash-drop-anim"><svg width="24" height="36" viewBox="0 0 24 36"><path d="M12 0C12 0 0 18 0 24C0 30.6 5.4 36 12 36C18.6 36 24 30.6 24 24C24 18 12 0 12 0Z" fill="rgba(176,170,160,0.6)"/></svg></div>
+
 </div>
 
 
 <!-- DECO BOTTLE -->
-<div id="deco-bottle" style="position:fixed;bottom:80px;right:16px;z-index:1;pointer-events:none;opacity:0.08;color:var(--text,#F0EBE0)">
-<svg width="60" height="140" viewBox="0 0 60 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="10" y="40" width="40" height="85" rx="8" stroke="currentColor" stroke-width="1" opacity="0.7"/>
-  <rect x="20" y="30" width="20" height="14" rx="3" stroke="currentColor" stroke-width="1" opacity="0.7"/>
-  <g class="bottle-pump" style="transform-origin:30px 15px">
-    <rect x="28" y="8" width="4" height="24" rx="2" stroke="currentColor" stroke-width="1" opacity="0.7"/>
-    <rect x="22" y="4" width="20" height="6" rx="3" stroke="currentColor" stroke-width="1" opacity="0.7"/>
-    <rect x="40" y="5" width="12" height="3" rx="1.5" stroke="currentColor" stroke-width="1" opacity="0.7"/>
-  </g>
-  <circle class="bottle-drop" cx="52" cy="12" r="3" fill="currentColor" opacity="0" style="transform-origin:52px 12px"/>
-  <rect x="15" y="60" width="30" height="20" rx="2" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
-</svg>
+<div id="deco-bottle">
+  <svg viewBox="0 0 80 180" fill="none" style="color:rgba(176,170,160,1);width:100%;height:100%">
+    <rect x="15" y="55" width="50" height="100" rx="10" stroke="currentColor" stroke-width="1.2" opacity="0.3"/>
+    <rect x="15" y="55" width="50" height="100" rx="10" fill="currentColor" opacity="0.03"/>
+    <rect x="27" y="42" width="26" height="16" rx="4" stroke="currentColor" stroke-width="1.2" opacity="0.3"/>
+    <g class="b-pump">
+      <rect x="36" y="12" width="8" height="32" rx="4" fill="currentColor" opacity="0.2"/>
+      <rect x="28" y="6" width="24" height="10" rx="5" fill="currentColor" opacity="0.15"/>
+      <rect x="52" y="8" width="18" height="5" rx="2.5" fill="currentColor" opacity="0.2"/>
+    </g>
+    <g class="b-squirt" opacity="0">
+      <ellipse cx="74" cy="14" rx="3" ry="3" fill="currentColor" opacity="0.5"/>
+      <ellipse cx="78" cy="20" rx="2" ry="2" fill="currentColor" opacity="0.3"/>
+      <ellipse cx="76" cy="28" rx="2.5" ry="2.5" fill="currentColor" opacity="0.4"/>
+      <ellipse cx="72" cy="38" rx="2" ry="2" fill="currentColor" opacity="0.2"/>
+      <ellipse cx="70" cy="48" rx="1.5" ry="1.5" fill="currentColor" opacity="0.15"/>
+    </g>
+    <rect x="22" y="80" width="36" height="28" rx="3" stroke="currentColor" stroke-width="0.5" opacity="0.15"/>
+    <line x1="26" y1="88" x2="54" y2="88" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
+    <line x1="26" y1="93" x2="50" y2="93" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
+    <line x1="26" y1="98" x2="46" y2="98" stroke="currentColor" stroke-width="0.3" opacity="0.1"/>
+    <rect class="b-liquid" x="16" y="155" width="48" height="0" rx="8" fill="currentColor" opacity="0.1"/>
+  </svg>
 </div>
 <div class="app">
 
@@ -1369,7 +1384,7 @@ function renderPrices(){
 
 async function groqAsk(prompt, systemPrompt){
   if(!getYaKey()||!getYaFolder()){ return '__NO_KEY__'; }
-  try {
+  bottleLoadStart(); try {
     var messages = [];
     if(systemPrompt) messages.push({role:'system', text:systemPrompt});
     messages.push({role:'user', text:prompt});
@@ -1379,9 +1394,9 @@ async function groqAsk(prompt, systemPrompt){
       body:JSON.stringify({key:getYaKey(), folder:getYaFolder(), messages:messages})
     });
     const d = await r.json();
-    if(!r.ok){ console.error('AI proxy error:', d); return ''; }
-    return d.text || '';
-  } catch(e){
+    if(!r.ok){ console.error('AI proxy error:', d); bottleLoadEnd(); return ''; }
+    const text = d.text || '' ; bottleLoadEnd(); return text;
+  } catch(e){ bottleLoadEnd();
     console.error('AI fetch failed:', e);
     return '';
   }
@@ -2549,8 +2564,8 @@ const SB_KEY = 'sb_publishable_tR87NIbBX5gEZaqnZKq9EQ_JjIIDFxf';
 const SB_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10b3RsdG9hbnVkd3V4YnZoZWpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Njk3OTAsImV4cCI6MjA5NjE0NTc5MH0.Gpl8skzkvSmUY3cNiPO0IQbgvhyLjFvMOvs5Spi1Xro';
 
 function sbFetch(path, method, body){
+function sbFetch(path, method, body){
   return fetch(SB_URL+'/rest/v1/'+path,{
-    method:method||'GET',
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':method==='POST'?'resolution=merge-duplicates,return=minimal':''},
     body:body?JSON.stringify(body):undefined
   });
@@ -4893,6 +4908,18 @@ loadProfile();
 renderProducts();
 setTimeout(loadFromCloud, 1000);
 checkAuthAndInit();
+
+function bottleLoadStart(){var b=document.getElementById('deco-bottle');if(b)b.classList.add('bottle-loading');}
+function bottleLoadEnd(){var b=document.getElementById('deco-bottle');if(b)b.classList.remove('bottle-loading');}
+
+setTimeout(function(){
+  var sp=document.getElementById('splash');
+  if(!sp||sp.style.display==='none')return;
+  sp.style.transition='transform 1s cubic-bezier(0.4,0,0.2,1), opacity 0.8s ease';
+  sp.style.transform='translateY(-100vh)';
+  sp.style.opacity='0';
+  setTimeout(function(){sp.style.display='none'; checkAuthAndInit();},1000);
+},6000);
 updateStepper('client');
 // Show username in sidebar
 var _u = localStorage.getItem('asense_user');
@@ -4903,15 +4930,13 @@ if(_sideUser && _u) _sideUser.textContent = '👤 ' + _u;
 
 (function(){
   document.addEventListener('click',function(e){
-    var btn=e.target.closest('.seg-btn,.btn-gold,.mob-nav button,.tc,button,[onclick]');
-    if(!btn)return;
+    if(!e.target.closest('button,.seg-btn,.btn-gold,.mob-nav *,.tc,[onclick],.prod-row'))return;
     var b=document.getElementById('deco-bottle');
-    if(!b)return;
-    b.classList.remove('pump-active');
+    if(!b||b.closest('#splash'))return;
+    b.classList.remove('pump-go');
     void b.offsetWidth;
-    b.classList.add('pump-active');
-    b.style.opacity='0.2';
-    setTimeout(function(){b.classList.remove('pump-active');b.style.opacity='';},1000);
+    b.classList.add('pump-go');
+    setTimeout(function(){b.classList.remove('pump-go')},1200);
   });
 })();
 </script>
