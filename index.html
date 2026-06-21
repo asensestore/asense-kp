@@ -37,24 +37,24 @@ body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;font-size:14px;back
 .login-error{color:#f44336;font-size:12px;margin-top:6px;display:none}
 
 /* SPLASH */
-#splash{position:fixed;inset:0;z-index:9999;background:#231F20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;cursor:pointer;overflow:hidden;animation:none}
+#splash{position:fixed;inset:0;z-index:9999;background:#0A0A0A;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
 #splash.hide{pointer-events:none}
-.splash-bg{position:absolute;inset:0;background:url('splash.jpg') center 60%/cover no-repeat;opacity:0.25;animation:splashReveal 2.8s cubic-bezier(0.25,0.46,0.45,0.94) both}
-.splash-logo{z-index:1;text-align:center}
-.splash-sub{font-size:12px;letter-spacing:3px;color:#B0AAA0;z-index:1;margin-top:12px;animation:fadeUp .8s ease .9s both;opacity:0}
-.splash-bar{width:60px;height:1px;background:rgba(176,170,160,0.5);margin-top:24px;z-index:1;animation:growBar 1.2s ease .8s both;transform:scaleX(0);transform-origin:left}
-#splash-hint{font-size:10px;color:#6F6A65;letter-spacing:2px;z-index:1;position:absolute;bottom:40px;opacity:0;animation:splashHintIn 0.8s ease 2.3s both}
+#splash .splash-bg{position:absolute;inset:0;background:url('splash.jpg') center 55%/cover;opacity:0;transition:none;animation:bgReveal 2s cubic-bezier(0.16,1,0.3,1) 0.3s both}
+#splash .splash-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,10,10,0.3),rgba(10,10,10,0.6));z-index:1}
+#splash img{position:relative;z-index:2;max-width:180px;opacity:0;animation:logoReveal 1.2s cubic-bezier(0.16,1,0.3,1) 1s both}
+#splash .splash-sub{position:relative;z-index:2;color:rgba(240,235,224,0.5);font-size:10px;letter-spacing:3px;text-transform:uppercase;margin-top:12px;opacity:0;animation:subReveal 1s cubic-bezier(0.16,1,0.3,1) 1.8s both}
+#splash-hint{position:absolute;bottom:40px;z-index:2;color:rgba(240,235,224,0.3);font-size:11px;letter-spacing:1px;animation:hintPulse 2s ease infinite 2.5s}
+@keyframes bgReveal{to{opacity:1}}
+@keyframes logoReveal{from{opacity:0;transform:translateY(30px);filter:blur(10px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@keyframes subReveal{from{opacity:0;letter-spacing:8px}to{opacity:1;letter-spacing:3px}}
+@keyframes hintPulse{0%,100%{opacity:0.2}50%{opacity:0.5}}
+@keyframes splashClose{to{opacity:0;transform:scale(1.02)}}
+.splash-closing{animation:splashClose 0.6s cubic-bezier(0.4,0,0.2,1) both}
+.splash-closing .splash-bg{filter:blur(8px);transition:filter 0.6s}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes growBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes kenBurns{from{transform:scale(1.03) translateX(-1%)}to{transform:scale(1) translateX(0)}}
-@keyframes splashLogoIn{from{opacity:0;transform:translateY(20px) scale(0.9)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes splashHintIn{from{opacity:0}to{opacity:0.5}}
-@keyframes splashReveal{from{clip-path:inset(45% 35%);transform:scale(1.08)}to{clip-path:inset(0%);transform:scale(1)}}
-@media(min-width:1400px){#splash .splash-bg,#splash{background-position:center 50%;background-size:cover}}
 
-@keyframes splashExit{to{clip-path:inset(50% 50%);opacity:0;transform:scale(1.05)}}
-#splash img{opacity:0;animation:splashLogoIn 1s cubic-bezier(0.25,0.46,0.45,0.94) 1.5s both}
-.splash-exit{animation:splashExit .8s cubic-bezier(.4,0,.2,1) both!important}
+
 
 /* LAYOUT */
 .app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
@@ -317,9 +317,9 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 /* ═══ SECTION TITLES ═══ */
 .sec-title{font-family:'Space Grotesk',sans-serif!important;font-style:normal!important;font-size:11px!important;letter-spacing:2.5px!important;text-transform:uppercase!important;color:rgba(176,170,160,0.4)!important;font-weight:400!important}
 
-/* ═══ SPLASH BUTTERFLIES ═══ */
-#splash .butterflies{position:absolute;z-index:10;pointer-events:none}
-#splash.hide .butterflies span{animation:splashBfExit 0.9s ease forwards!important}
+
+
+
 
 
 
@@ -336,12 +336,12 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 
 /* === ACCESSIBILITY === */
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-@keyframes pumpPress{0%{transform:translateY(0)}30%{transform:translateY(4px)}100%{transform:translateY(0)}}
-@keyframes dropFall{0%{opacity:1;transform:translateY(0) scale(1)}70%{opacity:0.6;transform:translateY(60px) scale(0.5)}100%{opacity:0;transform:translateY(80px) scale(0)}}
+@keyframes pumpDown{0%{transform:translateY(0)}40%{transform:translateY(5px)}100%{transform:translateY(0)}}30%{transform:translateY(4px)}100%{transform:translateY(0)}}
+@keyframes dropFall{0%{opacity:0.8;transform:translateY(0)}100%{opacity:0;transform:translateY(60px) scale(0.3)}}70%{opacity:0.6;transform:translateY(60px) scale(0.5)}100%{opacity:0;transform:translateY(80px) scale(0)}}
 .bottle-pump{transform-origin:center top}
-.pump-active .bottle-pump{animation:pumpPress 0.4s cubic-bezier(.4,0,.2,1)}
-.pump-active .bottle-drop{animation:dropFall 0.8s cubic-bezier(.4,0,.2,1) 0.15s both}
-@media(max-width:768px){#deco-bottle{right:8px;bottom:70px;height:120px}}
+.pump-active .bottle-pump{animation:pumpDown 0.35s cubic-bezier(.4,0,.2,1)}
+.pump-active .bottle-drop{animation:dropFall 0.7s cubic-bezier(.4,0,.2,1) 0.1s both}
+@media(max-width:768px){#deco-bottle{bottom:75px;right:12px}}
 </style>
 </head>
 <body>
@@ -381,27 +381,25 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 
 <div id="splash" onclick="hideSplash()">
   <div class="splash-bg"></div>
-  <div class="splash-logo"><img src="data:image/png;base64,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" style="height:40px;display:block;margin:0 auto" alt="Asense"></div>
-  <div class="splash-sub">ГЕНЕРАТОР КП И БАЗА ЗНАНИЙ</div>
-  <div class="splash-bar"></div>
-  <div class="butterflies">
-  <span style="top:20%;right:15%;animation:drift1 28s infinite;opacity:.70"><svg class="bf-svg" viewBox="-5 0 50 30" fill="none" stroke-linecap="round" stroke-linejoin="round" width="28" height="18"><g class="bf-left"><path d="M20,13 C14,8 4,2 1,6 C-2,10 5,18 20,14"/><path d="M20,16 C14,20 8,25 6,22 C4,19 8,15 20,17"/></g><g class="bf-right"><path d="M20,13 C26,8 36,2 39,6 C42,10 35,18 20,14"/><path d="M20,16 C26,20 32,25 34,22 C36,19 32,15 20,17"/></g><path d="M20,7 Q20,15 20,23" stroke-width="0.5"/><path d="M20,7 C19,5 17,3 15.5,1.5" stroke-width="0.4"/><path d="M20,7 C21,5 23,3 24.5,1.5" stroke-width="0.4"/></svg></span>
-  <span style="top:60%;left:10%;animation:drift2 26s infinite;opacity:.60"><svg class="bf-svg" viewBox="-5 0 50 30" fill="none" stroke-linecap="round" stroke-linejoin="round" width="24" height="16"><g class="bf-left"><path d="M20,13 C14,8 4,2 1,6 C-2,10 5,18 20,14"/><path d="M20,16 C14,20 8,25 6,22 C4,19 8,15 20,17"/></g><g class="bf-right"><path d="M20,13 C26,8 36,2 39,6 C42,10 35,18 20,14"/><path d="M20,16 C26,20 32,25 34,22 C36,19 32,15 20,17"/></g><path d="M20,7 Q20,15 20,23" stroke-width="0.5"/><path d="M20,7 C19,5 17,3 15.5,1.5" stroke-width="0.4"/><path d="M20,7 C21,5 23,3 24.5,1.5" stroke-width="0.4"/></svg></span>
-  <span style="top:40%;right:40%;animation:drift3 30s infinite;opacity:.50"><svg class="bf-svg" viewBox="-5 0 50 30" fill="none" stroke-linecap="round" stroke-linejoin="round" width="20" height="14"><g class="bf-left"><path d="M20,13 C14,8 4,2 1,6 C-2,10 5,18 20,14"/><path d="M20,16 C14,20 8,25 6,22 C4,19 8,15 20,17"/></g><g class="bf-right"><path d="M20,13 C26,8 36,2 39,6 C42,10 35,18 20,14"/><path d="M20,16 C26,20 32,25 34,22 C36,19 32,15 20,17"/></g><path d="M20,7 Q20,15 20,23" stroke-width="0.5"/><path d="M20,7 C19,5 17,3 15.5,1.5" stroke-width="0.4"/><path d="M20,7 C21,5 23,3 24.5,1.5" stroke-width="0.4"/></svg></span>
-</div>
-<div id="splash-hint">НАЖМИТЕ ЧТОБЫ ПРОДОЛЖИТЬ</div>
+  <div class="splash-overlay"></div>
+  <img src="data:image/png;base64,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" style="max-width:180px">
+  <div class="splash-sub">small rituals · big self-care moments</div>
+<div id="splash-hint">нажмите чтобы продолжить</div>
 </div>
 
 
 <!-- DECO BOTTLE -->
-<div id="deco-bottle" style="position:fixed;z-index:0;pointer-events:none;right:30px;bottom:30px;height:200px;opacity:0.06">
-<svg width="80" height="200" viewBox="0 0 80 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect class="bottle-pump" x="22" y="28" width="36" height="8" rx="4" stroke="rgba(176,170,160,0.9)" stroke-width="1.5"/>
-  <rect class="bottle-pump" x="37" y="36" width="6" height="22" stroke="rgba(176,170,160,0.9)" stroke-width="1.5"/>
-  <rect x="30" y="56" width="20" height="16" rx="2" stroke="rgba(176,170,160,0.9)" stroke-width="1.5"/>
-  <path d="M14 78 Q14 72 30 72 L50 72 Q66 72 66 78 L66 168 Q66 180 54 180 L26 180 Q14 180 14 168 Z" stroke="rgba(176,170,160,0.9)" stroke-width="1.5"/>
-  <rect x="20" y="100" width="40" height="50" rx="3" stroke="rgba(176,170,160,0.5)" stroke-width="1"/>
-  <circle class="bottle-drop" cx="40" cy="62" r="3" fill="rgba(176,170,160,0.8)" opacity="0"/>
+<div id="deco-bottle" style="position:fixed;bottom:80px;right:16px;z-index:1;pointer-events:none;opacity:0.08;color:var(--text,#F0EBE0)">
+<svg width="60" height="140" viewBox="0 0 60 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="40" width="40" height="85" rx="8" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+  <rect x="20" y="30" width="20" height="14" rx="3" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+  <g class="bottle-pump" style="transform-origin:30px 15px">
+    <rect x="28" y="8" width="4" height="24" rx="2" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+    <rect x="22" y="4" width="20" height="6" rx="3" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+    <rect x="40" y="5" width="12" height="3" rx="1.5" stroke="currentColor" stroke-width="1" opacity="0.7"/>
+  </g>
+  <circle class="bottle-drop" cx="52" cy="12" r="3" fill="currentColor" opacity="0" style="transform-origin:52px 12px"/>
+  <rect x="15" y="60" width="30" height="20" rx="2" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
 </svg>
 </div>
 <div class="app">
@@ -2585,10 +2583,10 @@ function loadFromCloud(){
 
 // Stub functions available immediately for inline onclick handlers
 function hideSplash(){
-  var s=document.getElementById('splash');
-  if(s&&s.style.display!=='none'){
-    s.classList.add('splash-exit');
-    setTimeout(function(){s.style.display='none';s.classList.remove('splash-exit');},1000);
+  var sp=document.getElementById('splash');
+  if(sp&&sp.style.display!=='none'){
+    sp.classList.add('splash-closing');
+    setTimeout(function(){sp.style.display='none';sp.classList.remove('splash-closing');},600);
   }
 }
 
