@@ -1947,15 +1947,17 @@ async function saveToKB(btn){
 // ===== ЗАГРУЗИТЬ ПОХОЖИЕ КЕЙСЫ ИЗ БД =====
 async function loadSimilarKB(situation, segment){
   try {
-    var catMap = {recommend:'product',upsell:'sales',objection:'objection',competitor:'objection',cold:'script',followup:'script',chat:'script',aroma:'product'};
-    var category = catMap[situation] || 'sales';
-    var r = await fetch(SB_URL+'/rest/v1/ai_knowledge?category=eq.'+encodeURIComponent(category)+'&order=created_at.desc&limit=5', {
+    var r = await fetch(SB_URL+'/rest/v1/ai_knowledge?select=title,content,question,answer&order=created_at.desc&limit=20', {
       headers: {'apikey': SB_ANON_KEY, 'Authorization': 'Bearer '+SB_ANON_KEY}
     });
     if(!r.ok) return '';
     var rows = await r.json();
     if(!rows || !rows.length) return '';
-    return '\n\nОПЫТ ИЗ БАЗЫ ЗНАНИЙ КОМАНДЫ:\n' + rows.map(function(row){ return '• '+(row.question||'')+' → '+(row.answer||''); }).join('\n');
+    return '\n\nБАЗА ЗНАНИЙ ASENSE:\n' + rows.map(function(row){
+      var label = row.title || row.question || '';
+      var body = row.content || row.answer || '';
+      return label + (body ? ': ' + body : '');
+    }).join('\n');
   } catch(e){ return ''; }
 }
 
@@ -2262,21 +2264,11 @@ async function trainAISend(){
   msgs.scrollTop=msgs.scrollHeight;
 
   try {
-    var kbCtx = '';
-    try {
-      var r = await fetch(SB_URL+'/rest/v1/ai_knowledge?order=created_at.desc&limit=50', {
-        headers:{'apikey':SB_ANON_KEY,'Authorization':'Bearer '+SB_ANON_KEY}
-      });
-      if(r.ok){
-        var rows = await r.json();
-        kbCtx = rows.map(function(x){return '['+x.category+']: '+(x.question||'')+(x.answer?' → '+x.answer:'')+(x.content?' '+x.content:'');}).join('\n');
-      }
-    } catch(e){ console.error('KB load error',e); }
+    var kbCtx = await loadSimilarKB('training', '');
 
-    var sys = 'Ты консультант по продукции Asense (B2B HoReCa: ароматы, средства для волос и тела, диффузоры). '
-      +'ВАЖНО: отвечай СТРОГО по базе знаний. Если в базе знаний нет точного ответа — скажи: уточню у руководителя. НЕ ДОДУМЫВАЙ и НЕ КОМБИНИРУЙ факты. Матовое стекло существует ТОЛЬКО в формате 300 мл. 500 мл стекло — только прозрачное. 500 мл пластик — только зелёный. '
-      +'Отвечай кратко, по делу, на русском.\n\n'
-      +'БАЗА ЗНАНИЙ:\n'+(kbCtx||'(пусто — записей нет)');
+    var sys = 'Ты — консультант по продукции Asense. Отвечай ТОЛЬКО на основе базы знаний ниже. Если точного ответа нет — скажи что уточнишь. Не додумывай.\n'
+      +'ВАЖНО: Матовое стекло ТОЛЬКО 300 мл. 500 мл стекло — только прозрачное. 500 мл пластик — только зелёный.'
+      +(kbCtx || '\n\nБАЗА ЗНАНИЙ ASENSE:\n(пусто)');
 
     var ans = await groqAsk(q, sys);
     if(ans==='__NO_KEY__') ans='⚠️ Настройте YandexGPT API-ключ в разделе «Настройки»';
