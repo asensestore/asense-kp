@@ -955,6 +955,7 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
       <button class="train-tab" onclick="switchTrainTab('formats',this)">Форматы</button>
       <button class="train-tab" onclick="switchTrainTab('prods',this)">Продукты</button>
       <button class="train-tab" onclick="switchTrainTab('tactics',this)">Тактика продаж</button>
+      <button class="train-ai-btn" onclick="openTrainAI()" style="width:auto;margin-bottom:0">🤖 Спросить у ИИ</button>
     </div>
 
     <!-- Tab: Ароматы -->
@@ -964,60 +965,77 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
         <summary class="acc-sum">Pure Cannabis <span class="acc-badge flag">Флагман</span></summary>
         <div class="acc-body">
           <div class="acc-row"><span class="acc-label">Ноты</span><span>Грейпфрут, чёрный перец, каннабис</span></div>
-          <div class="acc-row"><span class="acc-label">Характер</span><span>Дерзкий, провокационный</span></div>
-          <div class="acc-row"><span class="acc-label">В диффузоре</span><span>Тонкий, не навязчивый</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Дерзкий, экстраординарный, экзотический</span></div>
+          <div class="acc-row"><span class="acc-label">Кому продавать</span><span>Проекты с характером, не боящиеся рисковать, с собственным вайбом</span></div>
+          <div class="acc-row"><span class="acc-label">Стойкость</span><span>Хорошо держится на руках, волосах, теле. Бывает эффект — волосы намокают под дождём и снова пахнут</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">В диффузоре</span><span>⚠️ ТОНКИЙ — всегда предупреждать клиента</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Фраза клиенту</span><span>«Этот аромат гость запомнит. Это аромат, который удивит»</span></div>
         </div>
       </details>
 
       <details class="acc">
         <summary class="acc-sum">Virgin Lemongrass <span class="acc-badge">Универсальный</span></summary>
         <div class="acc-body">
-          <div class="acc-row"><span class="acc-label">Ноты</span><span>Лемонграсс, вербена, ландыш</span></div>
-          <div class="acc-row"><span class="acc-label">Характер</span><span>Свежий, универсальный</span></div>
-          <div class="acc-row acc-warn"><span class="acc-label">В диффузоре</span><span>⚠️ Не существует — только спрей и жидкое мыло</span></div>
+          <div class="acc-row"><span class="acc-label">Ноты</span><span>Лемонграсс, вербена, ландыш, бергамот</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Демократичный, универсальный, нерискованный</span></div>
+          <div class="acc-row"><span class="acc-label">Кому</span><span>Большие отели, консервативные проекты. Подходит мужчинам, женщинам, детям</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">В диффузоре</span><span>⚠️ НЕ СУЩЕСТВУЕТ — не раскрывается. Предлагать Meditation или White Lotus как альтернативу</span></div>
+          <div class="acc-row"><span class="acc-label">Сочетается</span><span>Meditation Session, White Lotus, Cannabis</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Фраза клиенту</span><span>«Аромат чистоты через луговые травы. Уважает максимальное количество гостей»</span></div>
         </div>
       </details>
 
       <details class="acc">
-        <summary class="acc-sum">Tobacco &amp; Vanilla <span class="acc-badge warm">Единственный тёплый</span></summary>
+        <summary class="acc-sum">Tobacco Leaf &amp; Vanilla <span class="acc-badge warm">Единственный тёплый</span></summary>
         <div class="acc-body">
           <div class="acc-row"><span class="acc-label">Ноты</span><span>Табак, ваниль, имбирь</span></div>
-          <div class="acc-row"><span class="acc-label">Характер</span><span>Тёплый, мягкий, уютный</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Мягкий, нежный, тёплый — единственный тёплый аромат в косметике</span></div>
+          <div class="acc-row"><span class="acc-label">Имбирь</span><span>Нейтрализует приторность и душность</span></div>
+          <div class="acc-row"><span class="acc-label">Кому</span><span>Консервативные приверженцы моды, не трендсеттеры</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">Нюанс</span><span>Внутри индустрии от него устали — для «своих» не новинка</span></div>
+          <div class="acc-row"><span class="acc-label">Наше УТП</span><span>Мягче и нежнее чем у конкурентов. Продаёт сам себя — распиарен другими брендами</span></div>
         </div>
       </details>
 
       <details class="acc">
-        <summary class="acc-sum">Sea Salt &amp; Wood <span class="acc-badge">Акватический</span></summary>
+        <summary class="acc-sum">Sea Salt &amp; Wood <span class="acc-badge">Акватический · спешал</span></summary>
         <div class="acc-body">
-          <div class="acc-row"><span class="acc-label">Ноты</span><span>Морская соль, дубовый мох</span></div>
-          <div class="acc-row"><span class="acc-label">Характер</span><span>Акватический, морской</span></div>
-          <div class="acc-row acc-warn"><span class="acc-label">Ограничение</span><span>⚠️ В Москве ресторанам нельзя (алкоголь → соль → ассоциации)</span></div>
+          <div class="acc-row"><span class="acc-label">Ноты</span><span>Морская соль, дубовый мох, сандал, можжевельник</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Акватический аромат побережья. Поляризующий: либо «вау!», либо категорически нет</span></div>
+          <div class="acc-row"><span class="acc-label">Идеален для</span><span>Проекты у воды, рыбные рестораны</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">Москва рестораны</span><span>⚠️ НЕЛЬЗЯ — зафиксирован за «Рыба Моя». За пределами Москвы — можно</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">Продукты</span><span>⚠️ Только для тела (мыло, гель, лосьон). НЕТ для волос</span></div>
+          <div class="acc-row"><span class="acc-label">История</span><span>Создан по заказу «Рыба Моя»</span></div>
         </div>
       </details>
 
       <details class="acc">
-        <summary class="acc-sum">Vetiver &amp; Rosemary <span class="acc-badge push">Пушить в рестораны</span></summary>
+        <summary class="acc-sum">Vetiver &amp; Rosemary <span class="acc-badge push">Пушить в рестораны · спешал</span></summary>
         <div class="acc-body">
-          <div class="acc-row"><span class="acc-label">Ноты</span><span>Ветивер, розмарин, petitgrain</span></div>
-          <div class="acc-row"><span class="acc-label">Характер</span><span>Гастрономический, не перебивает еду</span></div>
-          <div class="acc-row"><span class="acc-label">Тактика</span><span>Основной аргумент — «создан для ресторанов»</span></div>
+          <div class="acc-row"><span class="acc-label">Ноты</span><span>Ветивер, розмарин, petitgrain (перетёртые палочки цитрусовых)</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Гастрономический — антипод лемонграсса. Берут проекты «со своей изюминкой»</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">Продукты</span><span>⚠️ Только для тела. НЕТ для волос</span></div>
+          <div class="acc-row"><span class="acc-label">История</span><span>Создан для Massa Madre (хотели как Aesop), они отказались — мы оставили себе</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Лайфхак</span><span>Слово «petitgrain» — используйте его, клиенты впечатляются</span></div>
         </div>
       </details>
 
       <details class="acc">
-        <summary class="acc-sum">Спа-коллекция <span class="acc-badge">3 аромата</span></summary>
+        <summary class="acc-sum">Спа-коллекция <span class="acc-badge">3 аромата · диффузоры и спреи</span></summary>
         <div class="acc-body">
-          <div class="acc-row"><span class="acc-label">Hammam</span><span>Чистота, стерильность, баня</span></div>
-          <div class="acc-row"><span class="acc-label">Meditation</span><span>Хедлайнер коллекции — нравится всем</span></div>
-          <div class="acc-row"><span class="acc-label">White Lotus</span><span>Интенсивный, насыщенный</span></div>
+          <div class="acc-row"><span class="acc-label">Hammam Lover</span><span>Сандал, тубероза, иланг-иланг. Аромат чистоты — свежепостиранное бельё. Для любителей Blanche, пудровых ароматов. Ассоциации: камень, клубни пены, турецкие бани</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Meditation Session</span><span>🏆 ХЕДЛАЙНЕР. Персик, клубника, пудра, карибская ваниль. Нравится ВСЕМ без исключения. Не приторный — пудра нейтрализует. Рестораны, фитнес, отели. Гастрономический</span></div>
+          <div class="acc-row"><span class="acc-label">White Lotus</span><span>Пачули, благовония, белый лотос. Экзотический, азиатский, медитативный. Один из самых интенсивных. Для spa, йога-пространств. Тяжёлый, надёжный</span></div>
         </div>
       </details>
 
       <details class="acc">
-        <summary class="acc-sum">Oud Wealth <span class="acc-badge warm">Восточный</span></summary>
+        <summary class="acc-sum">Oud Wealth <span class="acc-badge warm">Восточный · белая этикетка</span></summary>
         <div class="acc-body">
-          <div class="acc-row"><span class="acc-label">Ноты</span><span>Удовое дерево, турецкая роза</span></div>
-          <div class="acc-row"><span class="acc-label">Характер</span><span>Восточный, роскошный, очень стойкий</span></div>
+          <div class="acc-row"><span class="acc-label">Ноты</span><span>Удовое дерево, турецкая роза, фиалка</span></div>
+          <div class="acc-row"><span class="acc-label">Характер</span><span>Восточный, стойкий, долгоиграющий. До появления Meditation — главный хедлайнер</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Надёжные в диффузоре</span><span>Oud, Meditation, White Lotus — тяжёлые и стойкие</span></div>
+          <div class="acc-row"><span class="acc-label">Лёгкие в диффузоре</span><span>Cannabis, Tobacco — деликатные, предупреждать клиента</span></div>
         </div>
       </details>
 
@@ -1034,19 +1052,33 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
                 <tr><th>Объём</th><th>Тип</th><th>Применение</th></tr>
               </thead>
               <tbody>
-                <tr><td>30 мл</td><td>Стекло</td><td>Пробник, travel-формат, премиум</td></tr>
+                <tr><td>30 мл</td><td>Пластик плотный</td><td>Пробник, travel-формат. Надо потрясти — норма индустрии</td></tr>
                 <tr><td>100 мл</td><td>Стекло</td><td>Ванная комната, небольшое пространство</td></tr>
                 <tr><td>125 мл</td><td>Стекло</td><td>Диффузор — стандартный формат</td></tr>
-                <tr><td>180 мл</td><td>Стекло</td><td>Увеличенный диффузор</td></tr>
+                <tr><td>180 мл</td><td>Стекло</td><td>Увеличенный диффузор, крем-баттер</td></tr>
                 <tr><td>250 мл</td><td>Стекло</td><td>Средний объём — отель, ресторан</td></tr>
-                <tr><td>300 мл</td><td>Стекло</td><td>Дозатор — рецепшн, умывальник</td></tr>
-                <tr><td>500 мл</td><td>Стекло</td><td>Профессиональный объём, отель</td></tr>
-                <tr><td>500 мл</td><td>Пластик</td><td>Эконом-вариант, СПА-процедуры</td></tr>
-                <tr><td>1 000 мл</td><td>Стекло / пластик</td><td>Для заправки, большой расход</td></tr>
-                <tr><td>5 000 мл</td><td>Канистра</td><td>Оптовая закупка, централизованный аромадиффузор</td></tr>
+                <tr><td>300 мл</td><td>Матовое стекло</td><td>Дозатор — рецепшн, умывальник. Австрийские + обжиг = soft-touch</td></tr>
+                <tr><td>500 мл</td><td>Прозрачное стекло</td><td>Только под брендирование, без нашей этикетки</td></tr>
+                <tr><td>500 мл</td><td>Тёмно-зелёный пластик</td><td>Душевые и бани где стекло запрещено. Клиенты думают — стекло</td></tr>
+                <tr><td>1 000 мл</td><td>Дойпак</td><td>Для густых текстур (кондиционер, скраб, лосьон). Замена канистр при отсутствии на складе — за наш счёт</td></tr>
+                <tr><td>5 000 мл</td><td>Канистра</td><td>Первая помпа бесплатно (1₽ в счёте). Доп. помпы 300₽</td></tr>
               </tbody>
             </table>
           </div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Важные нюансы по форматам</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Флаконы 300 мл</span><span>Базово всегда МАТОВОЕ стекло. Прозрачным не бывает. Австрийские + обжиг в Москве = soft-touch эффект</span></div>
+          <div class="acc-row"><span class="acc-label">Флаконы 500 мл прозрач.</span><span>Только под брендирование, без нашей этикетки</span></div>
+          <div class="acc-row"><span class="acc-label">Пластик 500 мл</span><span>Тёмно-зелёный бутылочный. Фидбэк клиентов: «думали это стекло». Для мест где стекло запрещено регламентом</span></div>
+          <div class="acc-row"><span class="acc-label">Миники 30 мл</span><span>Пластик плотный, надо потрясти — это норма всей индустрии, не наш баг</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Образцы отель</span><span>Все продукты (волосы + тело) + колбочки ароматов для диффузоров</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Образцы ресторан</span><span>Все ароматы мыла + лосьон. Даже если нужны только диффузоры — отправлять полный пакет</span></div>
+          <div class="acc-row"><span class="acc-label">Брендирование</span><span>Диффузоры, спреи, флаконы 300/500, косметички. НЕ брендируем миники и сотки</span></div>
+          <div class="acc-row"><span class="acc-label">Косметички</span><span>От 100 шт, +100–150 ₽. Меньше не берутся</span></div>
         </div>
       </details>
     </div><!-- /train-formats -->
@@ -1057,48 +1089,68 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
       <details class="acc">
         <summary class="acc-sum">Шампунь</summary>
         <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Состав</span><span>Бессульфатный, достойно пенится. Увеличивает срок чистой головы — нет несмываемых силиконов. Не вызывает привыкания, перхоти</span></div>
           <div class="acc-row"><span class="acc-label">Где продавать</span><span>Отели, СПА, фитнес-клубы</span></div>
-          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Профессиональная формула, брендируется под объект</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Фраза клиенту</span><span>«Нет клубней пены как у Head &amp; Shoulders, но достойно пенится именно для бессульфатного. Состав на английском — клиент видит что реально бессульфатный»</span></div>
         </div>
       </details>
 
       <details class="acc">
         <summary class="acc-sum">Кондиционер</summary>
         <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Состав</span><span>Густой, плотный, вязкий — значит НЕ разбавленный. Смываемые силиконы (must-have рабочего кондиционера). Подходит окрашенным волосам — закрывает чешуйки. Для кудрявого метода</span></div>
           <div class="acc-row"><span class="acc-label">Где продавать</span><span>Отели, СПА — всегда в паре с шампунем</span></div>
-          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Единый аромат-линейка, повышает средний чек</span></div>
+          <div class="acc-row"><span class="acc-label">Лайфхак</span><span>Можно держать дольше как маску</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Аргумент</span><span>Единый аромат-линейка повышает средний чек</span></div>
         </div>
       </details>
 
       <details class="acc">
         <summary class="acc-sum">Жидкое мыло</summary>
         <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Состав</span><span>Кокосовая моющая основа, без агрессивных ПАВ, алоэ вера и ромашка</span></div>
+          <div class="acc-row"><span class="acc-label">Преимущество</span><span>Антибактериальный эффект (в отличие от геля). Аромат деликатно задерживается на руках</span></div>
           <div class="acc-row"><span class="acc-label">Где продавать</span><span>Рестораны, отели, офисы, медцентры</span></div>
-          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Самый высокий оборот — расходник первой необходимости</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Аргумент</span><span>Самый высокий оборот — расходник первой необходимости</span></div>
         </div>
       </details>
 
       <details class="acc">
         <summary class="acc-sum">Гель для душа</summary>
         <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Состав</span><span>Деликатный кокосовый состав. Густая текстура экономично расходуется</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">Важно</span><span>⚠️ НЕ говорить «увлажняет» — это ложь. Но не смывает гидролипидный баланс, нет сухости и стянутости</span></div>
           <div class="acc-row"><span class="acc-label">Где продавать</span><span>Отели, фитнес, СПА</span></div>
-          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Замена одноразовым флаконам — экономия и экология</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Аргумент</span><span>Замена одноразовым флаконам — экономия и экология</span></div>
         </div>
       </details>
 
       <details class="acc">
         <summary class="acc-sum">Лосьон для тела</summary>
         <div class="acc-body">
-          <div class="acc-row"><span class="acc-label">Где продавать</span><span>СПА, отели 4–5★, салоны красоты</span></div>
-          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Финальный штрих после процедуры — запоминается гостем</span></div>
+          <div class="acc-row"><span class="acc-label">Состав</span><span>Пантенол (регенерация), масла миндаль + зародыши пшеницы + олива, Витамин E (anti-age). Облегчённая масляная текстура, быстро впитывается, нет плёнки</span></div>
+          <div class="acc-row"><span class="acc-label">Сезонность</span><span>Лето — после солнца, зима — от обветривания</span></div>
+          <div class="acc-row"><span class="acc-label">Где продавать</span><span>Отели, СПА, фитнес</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Аргумент</span><span>Создаёт wow-эффект у гостей, ощущение premium</span></div>
         </div>
       </details>
 
       <details class="acc">
-        <summary class="acc-sum">Крем-баттер</summary>
+        <summary class="acc-sum">Мыло-скраб Vetiver &amp; Rosemary</summary>
         <div class="acc-body">
-          <div class="acc-row"><span class="acc-label">Где продавать</span><span>Премиум СПА, бутик-отели, ритейл</span></div>
-          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Высокомаржинальный продукт — люкс-сегмент, подарок гостю</span></div>
+          <div class="acc-row"><span class="acc-label">Состав</span><span>Вулканическое стекло (природный пилинг), кокосовые ПАВ — нежная пена. Мягко отшелушивает, не повреждает кожу</span></div>
+          <div class="acc-row"><span class="acc-label">Особенность</span><span>Единственный продукт только в одном аромате</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Аргумент</span><span>Уникальный продукт на рынке HoReCa — конкуренты не предлагают скрабы</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Крем-баттер Гинкго Билоба <span class="acc-badge">Только ритейл</span></summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">Состав</span><span>Взбитые масла до суфле: конопля, аргана, ши, кокос, жожоба. Витамин E + конопляное масло = anti-age</span></div>
+          <div class="acc-row"><span class="acc-label">Аромат</span><span>Гинкго билоба — зелёный, прохладный, ни с чем не сравним. Единственный формат 180 мл</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">Канал продаж</span><span>⚠️ НЕ для HoReCa. Только маркетплейсы, салоны, магазины</span></div>
+          <div class="acc-row"><span class="acc-label">Тестеры</span><span>Не входит в стандартные тестеры — вкладывать отдельно для ритейл-клиентов</span></div>
         </div>
       </details>
 
@@ -1110,37 +1162,51 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
       <details class="acc">
         <summary class="acc-sum">Конкуренты</summary>
         <div class="acc-body">
-          <div class="acc-row"><span class="acc-label">Главное</span><span>Не называть конкурентов по имени — только «другие поставщики»</span></div>
-          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Asense — единственный в РФ с полным циклом: разработка, производство, брендирование, доставка</span></div>
-          <div class="acc-row"><span class="acc-label">Слабость конкурентов</span><span>Нет брендирования, китайская база, долгая логистика</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">Правило №1</span><span>НИКОГДА не занижать конкурентов. «Все достойные игроки» — иначе выглядишь неуверенно</span></div>
+          <div class="acc-row"><span class="acc-label">Скидка</span><span>Если давят ценой — максимум 10% и только с одобрения</span></div>
+          <div class="acc-row"><span class="acc-label">Наша сила</span><span>Asense = единственный в РФ полный цикл: разработка, производство, брендирование, логистика</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Фраза</span><span>«Мы работаем с теми, кто ценит качество, а не просто ищет подешевле»</span></div>
         </div>
       </details>
 
       <details class="acc">
-        <summary class="acc-sum">Образцы</summary>
+        <summary class="acc-sum">Позиционирование</summary>
         <div class="acc-body">
-          <div class="acc-row"><span class="acc-label">Правило</span><span>Образцы — только после подтверждения интереса и должности ЛПР</span></div>
-          <div class="acc-row"><span class="acc-label">Комплект</span><span>30 мл × 3 аромата на выбор клиента + аромадиффузор 125 мл</span></div>
-          <div class="acc-row"><span class="acc-label">Follow-up</span><span>Звонок через 3 дня — «Как ощущения у команды?»</span></div>
+          <div class="acc-row"><span class="acc-label">Категория</span><span>Мы в парфюмированной категории — не бытовая химия, не «гигиена», а аромамаркетинг + качество</span></div>
+          <div class="acc-row"><span class="acc-label">Партнёры</span><span>Mövenpick, Turandot, Azimut — называть при возражениях «мы не знаем вас»</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">УТП флакона</span><span>Матовое стекло 300 мл = единственное на рынке HoReCa. Гость трогает и чувствует разницу. Ни один конкурент не делает soft-touch дозаторы для HoReCa</span></div>
         </div>
       </details>
 
       <details class="acc">
-        <summary class="acc-sum">Тестовый период</summary>
+        <summary class="acc-sum">Образцы и тестовый период</summary>
         <div class="acc-body">
-          <div class="acc-row"><span class="acc-label">Длительность</span><span>2 недели — стандартный тест</span></div>
-          <div class="acc-row"><span class="acc-label">Условие</span><span>Клиент оплачивает только расходник; если не понравится — возврат остатка</span></div>
-          <div class="acc-row"><span class="acc-label">Цель</span><span>Снять возражение «нам нужно подумать» — пусть попробуют, а не думают</span></div>
+          <div class="acc-row acc-warn"><span class="acc-label">Главное правило</span><span>⚠️ ВСЕГДА за деньги. Никаких бесплатных образцов. 1₽ или символическая оплата</span></div>
+          <div class="acc-row"><span class="acc-label">Почему</span><span>Бесплатное не ценят. Тот кто платит — реально тестирует</span></div>
+          <div class="acc-row"><span class="acc-label">Тест-период</span><span>2 недели. Клиент оплачивает одну поставку. Не понравилось — возврат остатка</span></div>
+          <div class="acc-row"><span class="acc-label">Цель</span><span>Снять возражение «нам нужно подумать». Пусть попробуют, а не думают</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Фраза</span><span>«Давайте просто попробуем две недели — вы быстро поймёте, подходит это вашим гостям или нет»</span></div>
         </div>
       </details>
 
       <details class="acc">
-        <summary class="acc-sum">Брендирование</summary>
+        <summary class="acc-sum">Матовое стекло — главный УТП</summary>
         <div class="acc-body">
-          <div class="acc-row"><span class="acc-label">Что предлагаем</span><span>Флакон с логотипом клиента — от 300 шт.</span></div>
-          <div class="acc-row"><span class="acc-label">Срок</span><span>14–21 рабочих день с момента макета</span></div>
-          <div class="acc-row"><span class="acc-label">Аргумент</span><span>Гость забирает флакон домой → бесплатный рекламный носитель</span></div>
-          <div class="acc-row"><span class="acc-label">Маржа</span><span>Брендирование даёт +25–40% к чеку — всегда предлагать</span></div>
+          <div class="acc-row"><span class="acc-label">Что это</span><span>Флаконы 300 мл из австрийского стекла с обжигом в Москве. Soft-touch тактильный эффект</span></div>
+          <div class="acc-row"><span class="acc-label">Почему важно</span><span>Гость ТРОГАЕТ и замечает. Это часть сервиса. Пластик или прозрачное стекло — нет</span></div>
+          <div class="acc-row"><span class="acc-label">Когда предлагать</span><span>Рестораны, отели, спа — всегда. Офисы — только ресепшн</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">Аргумент</span><span>«Посмотрите на флакон — ни у кого в HoReCa такого нет. Гость трогает и понимает: это не расходник, это часть атмосферы»</span></div>
+        </div>
+      </details>
+
+      <details class="acc">
+        <summary class="acc-sum">Работа с возражениями</summary>
+        <div class="acc-body">
+          <div class="acc-row"><span class="acc-label">«Дорого»</span><span>«Это 80₽ в день на 50 гостей. Меньше чашки кофе на кухне» + предложить тест</span></div>
+          <div class="acc-row"><span class="acc-label">«Уже есть поставщик»</span><span>«Хорошо. А у вас есть матовый флакон или брендирование? Просто сравните один раз»</span></div>
+          <div class="acc-row"><span class="acc-label">«Нам нужно подумать»</span><span>Тестовый период. Всегда. Думают бесконечно — пробуют за 2 недели</span></div>
+          <div class="acc-row"><span class="acc-label">«Не знаем вас»</span><span>Называть партнёров (Mövenpick, Turandot). «Мы работаем с Х — спросите у них»</span></div>
+          <div class="acc-row acc-phrase"><span class="acc-label">«Нас всё устраивает»</span><span>«Отлично. Хотите посмотреть, как выглядит ваш логотип на матовом флаконе? Это бесплатно»</span></div>
         </div>
       </details>
 
@@ -1148,6 +1214,23 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 
   </div>
 </div><!-- /sec-training -->
+
+<!-- TRAIN AI MODAL -->
+<div id="train-ai-modal" onclick="if(event.target===this)closeTrainAI()">
+  <div id="train-ai-modal-box">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)">
+      <div style="font-size:14px;font-weight:600;color:var(--gold)">🤖 ИИ-консультант по продуктам</div>
+      <button onclick="closeTrainAI()" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;padding:0 4px">×</button>
+    </div>
+    <div id="train-ai-msgs">
+      <div class="ai-msg-bot">Привет! Спроси меня про ароматы, продукты, форматы или тактику продаж Asense.</div>
+    </div>
+    <div id="train-ai-inp-row">
+      <textarea id="train-ai-inp" placeholder="Например: В чём отличие Cannabis от Neroli?" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();trainAISend()}"></textarea>
+      <button class="btn btn-gold" onclick="trainAISend()" style="padding:0 16px;flex-shrink:0">→</button>
+    </div>
+  </div>
+</div>
 
 <style>
 .train-tab{background:var(--surface);border:1px solid var(--border);color:var(--muted);border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;transition:all .2s}
@@ -1170,6 +1253,20 @@ details[open] .acc-sum::before{transform:rotate(90deg)}
 .fmt-table th{padding:9px 14px;text-align:left;background:var(--dark);color:var(--gold);font-weight:500;font-size:11px;letter-spacing:.5px}
 .fmt-table td{padding:9px 14px;border-top:1px solid var(--border);color:var(--text)}
 .fmt-table tr:hover td{background:rgba(255,255,255,0.03)}
+.acc-phrase{background:rgba(212,175,55,0.07);border-radius:6px;padding:6px 8px;margin:-2px 0}
+.acc-warn{background:rgba(240,100,40,0.08);border-radius:6px;padding:6px 8px;margin:-2px 0}
+.acc-warn span{color:#f0a040}
+.train-ai-btn{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);color:var(--gold);border-radius:10px;padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer;width:100%;margin-bottom:12px;transition:border-color .15s,background .15s}
+.train-ai-btn:hover{border-color:var(--gold);background:rgba(212,175,55,0.07)}
+#train-ai-modal{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.7);align-items:flex-end;justify-content:center}
+#train-ai-modal.open{display:flex}
+#train-ai-modal-box{background:var(--dark);border:1px solid var(--border);border-radius:16px 16px 0 0;width:100%;max-width:640px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden}
+#train-ai-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:120px}
+.ai-msg-user{align-self:flex-end;background:var(--gold);color:#111;padding:8px 13px;border-radius:12px 12px 2px 12px;font-size:13px;max-width:80%}
+.ai-msg-bot{align-self:flex-start;background:var(--surface);border:1px solid var(--border);padding:8px 13px;border-radius:12px 12px 12px 2px;font-size:13px;max-width:90%;white-space:pre-wrap;line-height:1.5}
+#train-ai-inp-row{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border)}
+#train-ai-inp{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;color:var(--text);resize:none;height:40px;font-family:inherit}
+#train-ai-inp:focus{outline:none;border-color:var(--gold)}
 </style>
 
 </div><!-- /content -->
@@ -2124,6 +2221,86 @@ function switchTrainTab(id, btn){
   var pane = document.getElementById('train-'+id);
   if(pane) pane.style.display='';
   if(btn) btn.classList.add('active');
+}
+
+function openTrainAI(){
+  document.getElementById('train-ai-modal').classList.add('open');
+  setTimeout(function(){document.getElementById('train-ai-inp').focus();},100);
+}
+function closeTrainAI(){
+  document.getElementById('train-ai-modal').classList.remove('open');
+}
+
+var _trainAIBusy = false;
+var _trainAILastAnswer = '';
+
+async function trainAISend(){
+  if(_trainAIBusy) return;
+  var inp = document.getElementById('train-ai-inp');
+  var q = inp.value.trim();
+  if(!q) return;
+  inp.value='';
+  _trainAIBusy = true;
+
+  var msgs = document.getElementById('train-ai-msgs');
+  var uDiv = document.createElement('div');
+  uDiv.className='ai-msg-user';
+  uDiv.textContent=q;
+  msgs.appendChild(uDiv);
+
+  var bDiv = document.createElement('div');
+  bDiv.className='ai-msg-bot';
+  bDiv.textContent='⏳ Думаю...';
+  msgs.appendChild(bDiv);
+  msgs.scrollTop=msgs.scrollHeight;
+
+  try {
+    var kbCtx = '';
+    try {
+      var r = await fetch(SB_URL+'/rest/v1/ai_knowledge?category=in.(aroma,product,sales)&limit=10&order=created_at.desc', {
+        headers:{'apikey':SB_ANON_KEY,'Authorization':'Bearer '+SB_ANON_KEY}
+      });
+      if(r.ok){
+        var rows = await r.json();
+        kbCtx = rows.map(function(x){return '['+x.category+']: '+x.question+' → '+x.answer;}).join('\n');
+      }
+    } catch(e){}
+
+    var sys = 'Ты эксперт по продукции Asense (B2B HoReCa: ароматы, средства для волос и тела, диффузоры). '
+      +'Отвечай кратко, по делу, на русском. Если не знаешь — скажи честно.'
+      +(kbCtx?'\n\nБаза знаний:\n'+kbCtx:'');
+
+    var ans = await groqAsk(q, sys);
+    if(ans==='__NO_KEY__') ans='⚠️ Настройте YandexGPT API-ключ в разделе «Настройки»';
+    _trainAILastAnswer = ans;
+    bDiv.textContent = ans;
+
+    var saveBtn = document.createElement('button');
+    saveBtn.className='btn';
+    saveBtn.style.cssText='margin-top:8px;font-size:11px;padding:4px 10px;opacity:.8';
+    saveBtn.textContent='👍 В базу знаний';
+    saveBtn.onclick=function(){trainAISaveToKB(q,ans,saveBtn);};
+    bDiv.appendChild(document.createElement('br'));
+    bDiv.appendChild(saveBtn);
+  } catch(e){
+    bDiv.textContent='Ошибка: '+e.message;
+  }
+  _trainAIBusy=false;
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+async function trainAISaveToKB(question, answer, btn){
+  btn.disabled=true; btn.textContent='Сохраняю...';
+  try {
+    var r = await fetch(SB_URL+'/rest/v1/ai_knowledge', {
+      method:'POST',
+      headers:{'apikey':SB_ANON_KEY,'Authorization':'Bearer '+SB_ANON_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify({question:question, answer:answer, category:'sales'})
+    });
+    btn.textContent = r.ok ? '✓ Сохранено' : '✗ Ошибка '+r.status;
+  } catch(e){
+    btn.textContent='✗ '+e.message;
+  }
 }
 
 function toggleMobMenu(){
