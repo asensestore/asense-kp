@@ -241,7 +241,9 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
   .prod-row{display:flex!important;flex-wrap:wrap;gap:6px;padding:10px;width:100%;box-sizing:border-box}
   .prod-row input[type=checkbox]{flex-shrink:0;width:20px;height:20px}
   .prod-row>div:nth-child(2){flex:1;min-width:120px}
-  .num-in{width:56px;font-size:14px}
+  .num-in{width:48px;font-size:14px}
+  .qty-wrap{margin-left:auto}
+  .price-cell{font-size:13px}
   .totals{grid-template-columns:1fr 1fr;gap:8px}
   .totals .tc:last-child{grid-column:1/-1}
   .tc-val{font-size:16px}
@@ -4691,6 +4693,7 @@ loadProfile();
 renderProducts();
 setTimeout(loadFromCloud, 1000);
 checkAuthAndInit();
+updateStepper('client');
 // Show username in sidebar
 var _u = localStorage.getItem('asense_user');
 var _sideUser = document.getElementById('sidebar-user');
