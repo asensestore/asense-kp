@@ -336,12 +336,15 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 
 /* === ACCESSIBILITY === */
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-@keyframes pumpDown{0%{transform:translateY(0)}40%{transform:translateY(5px)}100%{transform:translateY(0)}}30%{transform:translateY(4px)}100%{transform:translateY(0)}}
-@keyframes dropFall{0%{opacity:0.8;transform:translateY(0)}100%{opacity:0;transform:translateY(60px) scale(0.3)}}70%{opacity:0.6;transform:translateY(60px) scale(0.5)}100%{opacity:0;transform:translateY(80px) scale(0)}}
+#deco-bottle{transition:opacity 0.3s}
+@keyframes pumpPress{0%{transform:translateY(0)}30%{transform:translateY(6px)}100%{transform:translateY(0)}}
+@keyframes dropFly{0%{r:0;opacity:0;transform:translate(0,0)}15%{r:4;opacity:0.7;transform:translate(2px,0)}50%{r:3;opacity:0.5;transform:translate(8px,20px)}100%{r:1;opacity:0;transform:translate(4px,60px)}}
+@keyframes dropDrip{0%{opacity:0;transform:translateY(0) scaleY(1)}20%{opacity:0.6;transform:translateY(4px) scaleY(1.2)}100%{opacity:0;transform:translateY(50px) scaleY(0.5)}}
 .bottle-pump{transform-origin:center top}
-.pump-active .bottle-pump{animation:pumpDown 0.35s cubic-bezier(.4,0,.2,1)}
-.pump-active .bottle-drop{animation:dropFall 0.7s cubic-bezier(.4,0,.2,1) 0.1s both}
+.pump-active .bottle-pump{animation:pumpPress 0.4s cubic-bezier(.4,0,.2,1)}
+.pump-active .bottle-drop{animation:dropDrip 0.8s cubic-bezier(.4,0,.2,1) 0.15s both}
 @media(max-width:768px){#deco-bottle{bottom:75px;right:12px}}
+@media(min-width:769px){#deco-bottle{bottom:30px;right:30px;opacity:0.08}}
 @keyframes dropAppear{0%{opacity:0;transform:translateY(-20px) scale(0)}40%{opacity:0.8;transform:translateY(0) scale(1)}60%{opacity:0.8;transform:translateY(0) scale(1)}80%{opacity:0.6;transform:translateY(10px) scale(1.3,0.6)}100%{opacity:0;transform:translateY(12px) scale(1.8,0.3)}}
 .splash-drop{opacity:0;animation:dropAppear 1.5s cubic-bezier(.4,0,.2,1) 4s both}
 </style>
@@ -4895,17 +4898,19 @@ if(_sideUser && _u) _sideUser.textContent = '👤 ' + _u;
 
 
 
-document.addEventListener('click', function(e){
-  if(e.target.closest('.seg-btn,.btn-gold,.mob-nav button,.tc')){
-    var bottle=document.getElementById('deco-bottle');
-    if(bottle){
-      bottle.classList.remove('pump-active');
-      void bottle.offsetWidth;
-      bottle.classList.add('pump-active');
-      setTimeout(function(){bottle.classList.remove('pump-active');},1000);
-    }
-  }
-});
+(function(){
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest('.seg-btn,.btn-gold,.mob-nav button,.tc,button,[onclick]');
+    if(!btn)return;
+    var b=document.getElementById('deco-bottle');
+    if(!b)return;
+    b.classList.remove('pump-active');
+    void b.offsetWidth;
+    b.classList.add('pump-active');
+    b.style.opacity='0.2';
+    setTimeout(function(){b.classList.remove('pump-active');b.style.opacity='';},1000);
+  });
+})();
 </script>
 </body>
 </html>
