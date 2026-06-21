@@ -102,14 +102,17 @@ body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;font-size:14px;back
 .prod-header{display:grid;grid-template-columns:30px 1fr 90px 90px 100px;gap:10px;padding:4px 12px;margin-bottom:4px}
 .prod-col{font-size:10px;color:var(--muted);letter-spacing:.5px}
 .prod-list{display:flex;flex-direction:column;gap:5px}
-.prod-row{display:grid;grid-template-columns:30px 1fr 90px 90px 100px;align-items:center;gap:10px;transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);transition:border-color .15s}
+.prod-row{display:grid;grid-template-columns:30px 1fr 90px 90px 100px;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);transition:border-color .15s,background .25s,transform .2s ease,box-shadow .2s ease}
 .prod-row:hover{border-color:#bbb;transform:translateY(-1px);box-shadow:0 4px 20px rgba(0,0,0,.5)}
 .prod-row.on{border-color:var(--stone);background:rgba(111,106,101,0.08)}
 .prod-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--stone);cursor:pointer}
 .prod-name{font-size:13px}
 .prod-sub{font-size:11px;color:var(--muted);margin-top:1px}
-.num-in{width:62px;padding:5px 7px;border:1px solid var(--border);border-radius:6px;font-size:12px;text-align:center;background:var(--surface);color:var(--text);font-family:inherit}
+.num-in{width:44px;padding:5px 4px;border:1px solid var(--border);border-radius:6px;font-size:12px;text-align:center;background:var(--surface);color:var(--text);font-family:inherit}
 .num-in:focus{outline:none;border-color:var(--gold)}
+.qty-wrap{display:flex;align-items:center;gap:2px;justify-content:flex-end}
+.qty-btn{width:22px;height:26px;border:1px solid var(--border);border-radius:5px;background:var(--surface);color:var(--muted);cursor:pointer;font-size:14px;line-height:1;padding:0;flex-shrink:0;transition:border-color .15s,color .15s}
+.qty-btn:hover{border-color:var(--gold);color:var(--gold)}
 
 /* TOTALS */
 .totals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}
@@ -570,6 +573,9 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start">
 </div>
 <div id="ai-suggest-out" style="display:none;margin-top:12px;padding:12px;background:var(--surface);border:1px solid var(--gold);border-radius:10px"></div>
+<div style="margin-top:10px">
+  <button class="btn btn-sm" onclick="resetAllProductPrices()" style="border-color:rgba(255,255,255,.2);color:var(--muted);font-size:11px">↺ Сбросить все цены</button>
+</div>
 </div>
 
 <!-- AROMA -->
@@ -2558,19 +2564,20 @@ function renderProducts(){
     const ap  = adjPrice(p.price);
     const toggle = isEquip ? "toggleEquip('"+p.id+"',this.checked)" : "toggleProd('"+p.id+"',this.checked)";
 
-    let rightCol;
+    var numIn;
     var segNorm = getNorm(p.id);
     if(isEquip){
-      rightCol = '<input class="num-in" type="number" min="0" value="'+(state.qty[p.id]||1)+'" oninput="state.qty[\''+p.id+'\']= +this.value;updateTotals()">';
+      numIn = '<input class="num-in" type="number" min="0" value="'+(state.qty[p.id]||1)+'" oninput="state.qty[\''+p.id+'\']= +this.value;updateTotals()">';
     } else if(segNorm > 0){
       var defCans = state.qty[p.id] || calcCans(segNorm);
-      rightCol = '<input class="num-in" type="number" min="1" value="'+defCans+'" oninput="state.qty[\''+p.id+'\']= +this.value;updateTotals()">';
+      numIn = '<input class="num-in" type="number" min="1" value="'+defCans+'" oninput="state.qty[\''+p.id+'\']= +this.value;updateTotals()">';
     } else if(p.norm > 0){
       var defCans2 = state.qty[p.id] || calcCans(p.norm);
-      rightCol = '<input class="num-in" type="number" min="1" value="'+defCans2+'" oninput="state.qty[\''+p.id+'\']= +this.value;updateTotals()">';
+      numIn = '<input class="num-in" type="number" min="1" value="'+defCans2+'" oninput="state.qty[\''+p.id+'\']= +this.value;updateTotals()">';
     } else {
-      rightCol = '<input class="num-in" type="number" min="0" value="'+(state.qty[p.id]||1)+'" oninput="state.qty[\''+p.id+'\']= +this.value;updateTotals()">';
+      numIn = '<input class="num-in" type="number" min="0" value="'+(state.qty[p.id]||1)+'" oninput="state.qty[\''+p.id+'\']= +this.value;updateTotals()">';
     }
+    var rightCol = '<div class="qty-wrap"><button class="qty-btn" type="button" onclick="changeQty(\''+p.id+'\',false)">−</button>'+numIn+'<button class="qty-btn" type="button" onclick="changeQty(\''+p.id+'\',true)">+</button></div>';
 
 const aromaList  = AROMA_MAP[p.id];
     const fixedAroma = FIXED_AROMA[p.id];
@@ -2593,7 +2600,7 @@ const aromaList  = AROMA_MAP[p.id];
       +'<input type="checkbox"'+(on?' checked':'')+' onchange="'+toggle+'">'
       +'<div><div class="prod-name">'+p.name+'</div><div class="prod-sub">'+(p.vol||p.sub||'')+'</div></div>'
       +'<div style="text-align:center;color:var(--muted);font-size:12px">'+(getNorm(p.id)>0?getNorm(p.id)+' мл':(p.norm>0?p.norm+' мл':(p.vol||'—')))+'</div>'
-      +'<div style="text-align:right;color:var(--muted);font-size:12px">'+fmt(ap)+'</div>'
+      +'<div id="priced-'+p.id+'" onclick="editPrice(\''+p.id+'\',this)" title="Нажмите для изменения цены" style="text-align:right;font-size:12px;cursor:pointer;'+(customPrices[p.id]!==undefined?'color:var(--gold);text-decoration:underline dotted var(--gold)':'color:var(--muted)')+'" >'+fmt(ap)+'</div>'
       +'<div>'+rightCol+'</div>'
       +aromaHtml
       +'</div>';
@@ -2673,6 +2680,69 @@ function updateTotals(){
 }
 
 function recalc(){ renderProducts(); }
+
+function editPrice(id, el){
+  var cur = getPrice(id);
+  var inp = document.createElement('input');
+  inp.type='number'; inp.value=cur; inp.min=0;
+  inp.style.cssText='width:72px;padding:3px 5px;border:1px solid var(--gold);border-radius:5px;font-size:12px;text-align:right;background:var(--surface);color:var(--gold);font-family:inherit;display:block;margin-left:auto';
+  var committed=false;
+  function commit(){
+    if(committed) return; committed=true;
+    var n=parseInt(inp.value);
+    if(!isNaN(n)&&n>=0){
+      customPrices[id]=n;
+      [...PRODUCTS,...EQUIP].forEach(function(p){if(p.id===id)p.price=n;});
+      localStorage.setItem('asense_prices',JSON.stringify(customPrices));
+    }
+    renderProducts();
+  }
+  inp.addEventListener('blur', commit);
+  inp.addEventListener('keydown', function(e){
+    if(e.key==='Enter') inp.blur();
+    if(e.key==='Escape'){committed=true; renderProducts();}
+  });
+  el.replaceWith(inp);
+  inp.focus(); inp.select();
+}
+
+function changeQty(id, inc){
+  var row=document.getElementById('row-'+id);
+  if(!row) return;
+  var inp=row.querySelector('.num-in');
+  if(!inp) return;
+  var min=parseInt(inp.min)||0;
+  var nv=Math.max(min, (parseInt(inp.value)||0)+(inc?1:-1));
+  inp.value=nv;
+  state.qty[id]=nv;
+  if(nv>0){
+    var cb=row.querySelector('input[type=checkbox]');
+    if(cb&&!cb.checked){cb.checked=true;cb.dispatchEvent(new Event('change'));}
+  }
+  updateTotals();
+}
+
+function resetAllProductPrices(){
+  if(!confirm('Сбросить все цены к стандартным?')) return;
+  customPrices={};
+  localStorage.removeItem('asense_prices');
+  [...PRODUCTS,...EQUIP].forEach(function(p){p.price=BASE_PRICES[p.id];});
+  renderProducts();
+}
+
+// Swipe right on mobile = add product to order
+(function(){
+  var sx=0,sy=0;
+  document.addEventListener('touchstart',function(e){sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+  document.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-sx, dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dy)>Math.abs(dx)||dx<60) return;
+    var row=e.target.closest('.prod-row');
+    if(!row) return;
+    var cb=row.querySelector('input[type=checkbox]');
+    if(cb&&!cb.checked){cb.checked=true;cb.dispatchEvent(new Event('change'));}
+  },{passive:true});
+})();
 
 function buildKPHtml(forPrint=false){
   const pvDisc     = document.getElementById('pv-discount');
