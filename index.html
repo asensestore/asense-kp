@@ -352,7 +352,7 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 .bottle-loading{opacity:0.15!important}
 .bottle-loading svg{animation:bottlePour 2.5s cubic-bezier(.4,0,.2,1) infinite;transform-origin:40px 155px}
 .bottle-loading .b-liquid{animation:bottleFill 2.5s cubic-bezier(.4,0,.2,1) infinite}
-.splash-drop-anim{position:absolute;top:-50px;left:50%;transform:translateX(-50%);z-index:10;opacity:0;animation:splashDrop 1.5s cubic-bezier(.55,.09,.68,.53) 4.5s both}
+.splash-drop-anim{position:absolute;top:-50px;left:50%;transform:translateX(-50%);z-index:10;opacity:0;animation:splashDrop 1.5s cubic-bezier(.55,.09,.68,.53) 3s both}
 @keyframes splashDrop{0%{opacity:0;top:-50px;transform:translateX(-50%) scale(1)}10%{opacity:0.8}70%{top:calc(100vh - 100px);transform:translateX(-50%) scale(1);opacity:0.8}85%{top:calc(100vh - 60px);transform:translateX(-50%) scaleX(2) scaleY(0.3);opacity:0.6}100%{top:calc(100vh - 40px);transform:translateX(-50%) scaleX(4) scaleY(0.05);opacity:0}}
 </style>
 </head>
@@ -2564,7 +2564,6 @@ const SB_KEY = 'sb_publishable_tR87NIbBX5gEZaqnZKq9EQ_JjIIDFxf';
 const SB_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10b3RsdG9hbnVkd3V4YnZoZWpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Njk3OTAsImV4cCI6MjA5NjE0NTc5MH0.Gpl8skzkvSmUY3cNiPO0IQbgvhyLjFvMOvs5Spi1Xro';
 
 function sbFetch(path, method, body){
-function sbFetch(path, method, body){
   return fetch(SB_URL+'/rest/v1/'+path,{
     headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':method==='POST'?'resolution=merge-duplicates,return=minimal':''},
     body:body?JSON.stringify(body):undefined
@@ -2610,7 +2609,7 @@ function hideSplash(){
   var sp=document.getElementById('splash');
   if(sp&&sp.style.display!=='none'){
     sp.classList.add('splash-closing');
-    setTimeout(function(){sp.style.display='none';sp.classList.remove('splash-closing');},1000);
+    setTimeout(function(){sp.style.display='none';sp.classList.remove('splash-closing');},1200);
   }
 }
 
@@ -3065,7 +3064,7 @@ function resetAllProductPrices(){
 document.body.addEventListener('click',function(e){
   var b=document.getElementById('deco-bottle');
   if(!b)return;
-  if(e.target.tagName==='BUTTON'||e.target.closest('button,.seg-btn,.btn-gold,.mob-nav div,.tc')){
+  if(e.target.tagName==='BUTTON'||e.target.closest('button,.seg-btn,.btn-gold,.mob-nav *,.tc,[onclick],.prod-row,input[type=number]')){
     b.classList.remove('pump-go');
     void b.offsetWidth;
     b.classList.add('pump-go');
