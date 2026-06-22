@@ -352,8 +352,6 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 .bottle-loading{opacity:0.15!important}
 .bottle-loading svg{animation:bottlePour 2.5s cubic-bezier(.4,0,.2,1) infinite;transform-origin:40px 155px}
 .bottle-loading .b-liquid{animation:bottleFill 2.5s cubic-bezier(.4,0,.2,1) infinite}
-.splash-drop-anim{position:absolute;top:-50px;left:50%;transform:translateX(-50%);z-index:10;opacity:0;animation:splashDrop 1.5s cubic-bezier(.55,.09,.68,.53) 3s both}
-@keyframes splashDrop{0%{opacity:0;top:-50px;transform:translateX(-50%) scale(1)}10%{opacity:0.8}70%{top:calc(100vh - 100px);transform:translateX(-50%) scale(1);opacity:0.8}85%{top:calc(100vh - 60px);transform:translateX(-50%) scaleX(2) scaleY(0.3);opacity:0.6}100%{top:calc(100vh - 40px);transform:translateX(-50%) scaleX(4) scaleY(0.05);opacity:0}}
 </style>
 </head>
 <body>
@@ -396,7 +394,6 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
   <div class="splash-overlay"></div>
   <img src="data:image/png;base64,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" style="max-width:180px">
   <div class="splash-sub">small rituals · big self-care moments</div>
-<div class="splash-drop-anim"><svg width="24" height="36" viewBox="0 0 24 36"><path d="M12 0C12 0 0 18 0 24C0 30.6 5.4 36 12 36C18.6 36 24 30.6 24 24C24 18 12 0 12 0Z" fill="rgba(176,170,160,0.6)"/></svg></div>
 
 </div>
 
@@ -1004,6 +1001,7 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
       <button class="train-tab" onclick="switchTrainTab('formats',this)">Форматы</button>
       <button class="train-tab" onclick="switchTrainTab('prods',this)">Продукты</button>
       <button class="train-tab" onclick="switchTrainTab('tactics',this)">Тактика продаж</button>
+      <button class="train-tab" onclick="switchTrainTab('sales',this)">Продажи</button>
       <button class="train-ai-btn" onclick="openTrainAI()" style="width:auto;margin-bottom:0">🤖 Спросить у ИИ</button>
     </div>
 
@@ -3062,9 +3060,10 @@ function resetAllProductPrices(){
 
 // Swipe right on mobile = add product to order
 document.body.addEventListener('click',function(e){
-  var b=document.getElementById('deco-bottle');
-  if(!b)return;
-  if(e.target.tagName==='BUTTON'||e.target.closest('button,.seg-btn,.btn-gold,.mob-nav *,.tc,[onclick],.prod-row,input[type=number]')){
+  var t=e.target;
+  if(t.tagName==='BUTTON'||t.tagName==='INPUT'||t.closest&&t.closest('button,.seg-btn,.btn-gold,.mob-nav *,.tc,[onclick],.prod-row,input[type=number]')){
+    var b=document.getElementById('deco-bottle');
+    if(!b)return;
     b.classList.remove('pump-go');
     void b.offsetWidth;
     b.classList.add('pump-go');
