@@ -35,6 +35,23 @@ export default async function handler(req, res) {
       res.status(200).json({ok:true}); return;
     }
 
+    if (body.action === 'accept' && body.kp_id) {
+      const rows = await (await sbFetch('kp_links?id=eq.' + body.kp_id + '&select=*')).json();
+      if (rows && rows.length && rows[0].manager_telegram_id) {
+        const kp = rows[0];
+        var segRu2 = {restaurant:'Ресторан',hotel:'Отель',spa:'СПА',glamping:'Глэмпинг',fitness:'Фитнес'}[kp.segment] || kp.segment || '';
+        const text = '✅ Клиент принял предложение!\n'
+          + '📋 ' + (kp.client_name||'—') + (segRu2?' ('+segRu2+')':'') + '\n'
+          + '💰 ' + (kp.total ? Number(kp.total).toLocaleString('ru-RU') + ' ₽' : '—') + '\n\n'
+          + '📲 Самое время позвонить и оформить заказ!';
+        await fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: kp.manager_telegram_id, text: text })
+        }).catch(function(){});
+      }
+      res.status(200).json({ok:true}); return;
+    }
+
     if (body.kp_id && body.items) {
       const rows = await (await sbFetch('kp_links?id=eq.' + body.kp_id + '&select=*')).json();
       if (rows && rows.length && rows[0].manager_telegram_id) {
@@ -163,23 +180,39 @@ export default async function handler(req, res) {
       + '<span style="margin-left:auto;font-weight:500">' + p.price.toLocaleString('ru-RU') + ' ₽</span></label>';
   }).join('');
 
-  const pageCSS = 'body{margin:0;padding:20px;background:#f5f0e8;font-family:system-ui,sans-serif}' + KP_CSS
+  const mgr = (kp.kp_data && kp.kp_data.mgr) || {};
+  const mgrContactHtml = (mgr.phone || mgr.tg) ? (
+    '<div style="max-width:700px;margin:0 auto 20px;padding:16px 20px;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.08);display:flex;align-items:center;gap:16px;flex-wrap:wrap">'
+    + '<div style="flex:1;min-width:0">'
+    + (mgr.name ? '<div style="font-weight:600;font-size:14px;color:#1A1A2E">' + mgr.name + '</div>' : '')
+    + '<div style="font-size:12px;color:#777;margin-top:2px">Ваш менеджер Asense</div>'
+    + '</div>'
+    + (mgr.phone ? '<a href="tel:' + mgr.phone + '" style="text-decoration:none;padding:8px 16px;background:#1A1A2E;color:#C9A84C;border-radius:8px;font-size:13px;font-weight:500">📞 ' + mgr.phone + '</a>' : '')
+    + (mgr.tg ? '<a href="https://t.me/' + mgr.tg.replace('@','') + '" target="_blank" style="text-decoration:none;padding:8px 16px;background:#229ED9;color:#fff;border-radius:8px;font-size:13px;font-weight:500">✈ Написать</a>' : '')
+    + '</div>'
+  ) : '';
+
+  const pageCSS = 'body{margin:0;padding:16px;background:#f5f0e8;font-family:system-ui,sans-serif}@media(min-width:600px){body{padding:20px}}' + KP_CSS
     + '.kp-actions{max-width:700px;margin:16px auto;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}'
-    + '.kp-actions button{padding:10px 24px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-family:inherit}'
+    + '.kp-actions button{padding:10px 20px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-family:inherit}'
     + '.btn-print{background:#1A1A2E;color:#C9A84C}'
     + '.btn-add{background:#C9A84C;color:#1A1A2E;font-weight:600}'
-    + '.add-panel{max-width:700px;margin:20px auto;background:#fff;padding:24px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);display:none}'
+    + '.btn-accept{background:#2E7D32;color:#fff;font-weight:700;font-size:15px;padding:12px 28px}'
+    + '.add-panel{max-width:700px;margin:20px auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);display:none}'
     + '.add-comment{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;min-height:50px;margin-top:12px;box-sizing:border-box}'
     + '.add-submit{width:100%;padding:12px;background:#1A1A2E;color:#C9A84C;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:12px;font-family:inherit}'
+    + '.kp-doc{padding:20px 16px}@media(min-width:600px){.kp-doc{padding:36px 40px}}'
     + '@media print{body{background:#fff;padding:0}.kp-actions,.add-panel{display:none}}';
 
   const page = '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">'
     + '<title>КП Asense — ' + (kp.client_name||'') + '</title>'
     + '<style>' + pageCSS + '</style></head><body>'
     + kpHtml
+    + mgrContactHtml
     + '<div class="kp-actions">'
-    + '<button class="btn-print" onclick="window.print()">🖨 Распечатать</button>'
+    + '<button class="btn-accept" id="acceptBtn" onclick="acceptKP()">✅ Принять предложение</button>'
     + '<button class="btn-add" onclick="toggleAdd()">＋ Дополнить заказ</button>'
+    + '<button class="btn-print" onclick="window.print()">🖨 Сохранить PDF</button>'
     + '</div>'
     + '<div class="add-panel" id="addPanel">'
     + '<h3 style="font-size:15px;margin:0 0 4px;color:#1A1A2E">Добавить к заказу</h3>'
@@ -191,7 +224,8 @@ export default async function handler(req, res) {
     + '<script>'
     + 'var VIEW_ID="' + viewId + '";'
     + 'var KP_ID="' + id + '";'
-    + 'function toggleAdd(){var p=document.getElementById("addPanel");if(!p)return;var h=!p.style.display||p.style.display==="none";p.style.display=h?"block":"none";}'
+    + 'function toggleAdd(){var p=document.getElementById("addPanel");if(!p)return;var h=!p.style.display||p.style.display==="none";p.style.display=h?"block":"none";p.scrollIntoView({behavior:"smooth",block:"start"});}'
+    + 'async function acceptKP(){var btn=document.getElementById("acceptBtn");if(!btn||btn.disabled)return;btn.disabled=true;btn.textContent="⏳ Отправляю...";try{await fetch("/api/kp",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"accept",kp_id:KP_ID})});btn.textContent="✅ Принято! Менеджер уже знает";btn.style.background="#1B5E20";}catch(e){btn.textContent="✅ Принято!";btn.style.background="#1B5E20";}}'
     + 'async function submitOrder(){var ch=document.querySelectorAll("#addProducts input:checked");if(!ch.length){alert("Выберите хотя бы один продукт");return;}var items=[];ch.forEach(function(c){items.push(c.value);});var cm=document.getElementById("addComment").value.trim();var btn=document.getElementById("addBtn");btn.textContent="⏳ Отправляю...";btn.disabled=true;try{var r=await fetch("/api/kp",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({kp_id:KP_ID,items:items,comment:cm})});if(r.ok){btn.textContent="✅ Отправлено!";btn.style.background="#2E7D32";btn.style.color="#fff";setTimeout(function(){document.getElementById("addPanel").style.display="none";},2000);}else{btn.textContent="❌ Ошибка";btn.disabled=false;}}catch(e){btn.textContent="❌ Ошибка";btn.disabled=false;}}'
     + 'var _st=Date.now(),_ms=0,_pr=false,_ac=false,_ref=document.referrer||"direct";'
     + 'window.addEventListener("scroll",function(){var s=Math.round((window.scrollY+window.innerHeight)/document.body.scrollHeight*100);if(s>_ms)_ms=s;});'
