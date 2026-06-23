@@ -352,6 +352,9 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 .bottle-loading{opacity:0.15!important}
 .bottle-loading svg{animation:bottlePour 2.5s cubic-bezier(.4,0,.2,1) infinite;transform-origin:40px 155px}
 .bottle-loading .b-liquid{animation:bottleFill 2.5s cubic-bezier(.4,0,.2,1) infinite}
+body.cbottle,body.cbottle *{cursor:none!important}
+#cbottle{position:fixed;pointer-events:none;z-index:9999;width:28px;height:65px;display:none;will-change:transform}
+#cbottle.pump-go{opacity:0.9!important}
 </style>
 </head>
 <body>
@@ -4965,6 +4968,56 @@ updateStepper('client');
 var _u = localStorage.getItem('asense_user');
 var _sideUser = document.getElementById('sidebar-user');
 if(_sideUser && _u) _sideUser.textContent = '👤 ' + _u;
+
+// cursor bottle — follows mouse, pumps on click/tap
+(function(){
+  var cb=document.createElement('div');
+  cb.id='cbottle';
+  cb.innerHTML='<svg viewBox="0 0 80 180" fill="none" style="color:rgba(160,155,145,0.85);width:100%;height:100%">'
+    +'<rect x="15" y="55" width="50" height="100" rx="10" stroke="currentColor" stroke-width="2.5" opacity="0.8"/>'
+    +'<rect x="15" y="55" width="50" height="100" rx="10" fill="currentColor" opacity="0.15"/>'
+    +'<rect x="27" y="42" width="26" height="16" rx="4" stroke="currentColor" stroke-width="2" opacity="0.7"/>'
+    +'<g class="b-pump">'
+    +'<rect x="36" y="12" width="8" height="32" rx="4" fill="currentColor" opacity="0.85"/>'
+    +'<rect x="28" y="6" width="24" height="10" rx="5" fill="currentColor" opacity="0.8"/>'
+    +'<rect x="52" y="8" width="18" height="5" rx="2.5" fill="currentColor" opacity="0.9"/>'
+    +'</g>'
+    +'<g class="b-squirt" opacity="0">'
+    +'<ellipse cx="74" cy="14" rx="3" ry="3" fill="currentColor" opacity="0.9"/>'
+    +'<ellipse cx="78" cy="20" rx="2" ry="2" fill="currentColor" opacity="0.7"/>'
+    +'<ellipse cx="76" cy="28" rx="2.5" ry="2.5" fill="currentColor" opacity="0.8"/>'
+    +'<ellipse cx="72" cy="38" rx="2" ry="2" fill="currentColor" opacity="0.6"/>'
+    +'</g>'
+    +'</svg>';
+  document.body.appendChild(cb);
+
+  function move(x,y){
+    // hotspot = pump head center (~14px from left, ~4px from top at 28px scale)
+    cb.style.left=(x-14)+'px';
+    cb.style.top=(y-4)+'px';
+  }
+  function pump(){
+    cb.classList.remove('pump-go');
+    void cb.offsetWidth;
+    cb.classList.add('pump-go');
+    setTimeout(function(){cb.classList.remove('pump-go');},1000);
+  }
+
+  document.addEventListener('mousemove',function(e){
+    move(e.clientX,e.clientY);
+    if(cb.style.display!=='block'){cb.style.display='block';document.body.classList.add('cbottle');}
+  });
+  document.addEventListener('mouseleave',function(){cb.style.display='none';document.body.classList.remove('cbottle');});
+  document.addEventListener('mousedown',function(e){move(e.clientX,e.clientY);pump();});
+
+  document.addEventListener('touchstart',function(e){
+    var t=e.touches[0];
+    move(t.clientX,t.clientY);
+    cb.style.display='block';
+    pump();
+    setTimeout(function(){cb.style.display='none';},1200);
+  },{passive:true});
+})();
 
 document.body.addEventListener('click',function(e){
   var t=e.target;
