@@ -2316,6 +2316,8 @@ function goStep(step){
 }
 
 function stepProdNext(){
+  var cnt=0; PRODUCTS.forEach(function(p){if(state.checked[p.id])cnt++;});
+  if(!cnt){ showToast('⚠ Выберите хотя бы один продукт'); return; }
   goStep(2);
 }
 
@@ -2956,7 +2958,7 @@ const aromaList  = AROMA_MAP[p.id];
       aromaList.forEach(function(a){ opts += '<option value="'+a+'"'+(selAroma===a?' selected':'')+'>'+a+'</option>'; });
       aromaHtml = '<div style="grid-column:1/-1;padding:2px 0 6px 30px;display:flex;align-items:center;gap:8px">'
         +'<span style="font-size:11px;color:var(--muted)">Аромат:</span>'
-        +'<select style="padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--surface);color:var(--text);font-family:inherit;max-width:260px" onchange="state.productAroma[\''+p.id+'\']=this.value">'
+        +'<select style="padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--surface);color:var(--text);font-family:inherit;max-width:260px" onchange="state.productAroma[\''+p.id+'\']=this.value;_isDirty=true">'
         +opts+'</select>'
         +(selAroma?'<span style="font-size:11px;background:rgba(111,106,101,0.15);color:var(--gold);padding:2px 8px;border-radius:12px">'+selAroma+'</span>':'')
         +'</div>';
@@ -2999,16 +3001,16 @@ function renderCustomItems(){
     <div style="display:grid;grid-template-columns:1fr 110px 90px 36px;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);margin-bottom:5px">
       <input type="text" value="${item.name}" placeholder="Название позиции"
         style="padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--surface);color:var(--text);font-family:inherit"
-        oninput="state.customItems[${i}].name=this.value">
+        oninput="state.customItems[${i}].name=this.value;_isDirty=true">
       <div style="display:flex;align-items:center;gap:4px">
         <input type="number" value="${item.price}" min="0" placeholder="Цена"
           style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--surface);color:var(--text);font-family:inherit"
-          oninput="state.customItems[${i}].price=+this.value;updateTotals()">
+          oninput="state.customItems[${i}].price=+this.value;updateTotals();_isDirty=true">
         <span style="font-size:11px;color:var(--muted)">₽</span>
       </div>
       <input type="number" value="${item.qty}" min="1" placeholder="Кол-во"
         style="padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--surface);color:var(--text);font-family:inherit;width:100%"
-        oninput="state.customItems[${i}].qty=+this.value;updateTotals()">
+        oninput="state.customItems[${i}].qty=+this.value;updateTotals();_isDirty=true">
       <button onclick="removeCustomItem(${i})" style="width:32px;height:32px;border:1px solid #ffcccc;border-radius:6px;background:none;color:#e44;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px">×</button>
     </div>`).join('');
 }
@@ -3016,6 +3018,7 @@ function renderCustomItems(){
 function addCustomItem(){
   state.customItems.push({name:'', price:0, qty:1});
   renderCustomItems();
+  _isDirty=true;
 }
 function removeCustomItem(i){
   state.customItems.splice(i,1);
@@ -4751,7 +4754,9 @@ function livePrice(id, val){
 
 // ===== SAVE TO HISTORY / LOAD SAVE / DELETE =====
 function saveToHistory(){
-  var name = document.getElementById('c-name').value.trim()||'Без названия';
+  var name = document.getElementById('c-name').value.trim();
+  if(!name){ showToast('⚠ Введите название клиента'); var f=document.getElementById('c-name'); if(f){f.focus();f.style.outline='2px solid var(--gold)';setTimeout(function(){f.style.outline='';},1500);} return; }
+  name = name||'Без названия';
   var saves = JSON.parse(localStorage.getItem('asense_kp')||'[]');
   var disc = getDisc();
   var total = 0;
@@ -5037,6 +5042,8 @@ function loadDraft(){
   if(!localStorage.getItem('asense_user')) return;
   var raw = localStorage.getItem('asense_kp_draft');
   if(!raw) return;
+  var nameEl = document.getElementById('c-name');
+  if(nameEl && nameEl.value.trim()) return; // уже есть данные — не затираем
   try {
     var draft = JSON.parse(raw);
     if(!draft||!draft.state) return;
@@ -5045,6 +5052,11 @@ function loadDraft(){
     if(draft.state.aromasDiff) state.aromasDiff=[...draft.state.aromasDiff];
     if(draft.state.aromasSpa) state.aromasSpa=[...draft.state.aromasSpa];
     if(draft.state.customItems) state.customItems=[...draft.state.customItems];
+    if(draft.state.segment){
+      var segMap={restaurant:0,hotel:1,spa:2,glamping:3,fitness:4};
+      document.querySelectorAll('.seg-btn').forEach(function(b,i){ b.classList.toggle('active',i===segMap[draft.state.segment]); });
+      var lblS=document.getElementById('lbl-seats'); if(lblS) lblS.textContent=SEG_LABELS[draft.state.segment]||'Посадочных мест';
+    }
     if(draft.inputs){
       Object.entries(draft.inputs).forEach(function(e){ var el=document.getElementById(e[0]); if(el) el.value=e[1]||''; });
     }
@@ -5080,6 +5092,11 @@ document.addEventListener('input',function(e){
   if(['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc'].indexOf(id)>=0) _isDirty=true;
 });
 window.onbeforeunload=function(){ if(_isDirty) return 'Есть несохранённые изменения. Уйти?'; };
+
+// ===== Ctrl+S — сохранить КП =====
+document.addEventListener('keydown',function(e){
+  if((e.ctrlKey||e.metaKey)&&e.key==='s'){ e.preventDefault(); saveToHistory(); }
+});
 
 // ===== 6. СЧЁТЧИК НА КНОПКЕ "ТОЛЬКО ВЫБРАННЫЕ" =====
 function updateOnlySelectedBtn(){
