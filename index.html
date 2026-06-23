@@ -352,6 +352,11 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 .bottle-loading{opacity:0.15!important}
 .bottle-loading svg{animation:bottlePour 2.5s cubic-bezier(.4,0,.2,1) infinite;transform-origin:40px 155px}
 .bottle-loading .b-liquid{animation:bottleFill 2.5s cubic-bezier(.4,0,.2,1) infinite}
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#2E7D32;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:500;z-index:9998;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#sec-products.only-selected .prod-row:not(.on){display:none!important}
+#btn-only-selected.active{opacity:1;background:var(--stone);color:#fff}
+.stp-step:not(.stp-active):hover .stp-num{border-color:var(--gold);color:var(--gold)}
 </style>
 </head>
 <body>
@@ -398,6 +403,7 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 </div>
 
 
+<div id="toast"></div>
 <!-- DECO BOTTLE -->
 <div id="deco-bottle">
   <svg viewBox="0 0 80 180" fill="none" style="color:rgba(176,170,160,1);width:100%;height:100%">
@@ -495,9 +501,6 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 <!-- CLIENT -->
 <div id="sec-client">
   
-<div style="margin-bottom:14px">
-<button type="button" onclick="shareCurrentKP()" style="width:100%;padding:12px;border:2px solid var(--gold);background:transparent;color:var(--gold);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;position:relative;z-index:10">🔗 Отправить онлайн КП клиенту</button>
-</div>
 <div class="sec-title">Сегмент</div>
   <div class="seg-tabs">
     <button class="seg-btn active" onclick="setSeg('restaurant',this)">🍽 Ресторан</button>
@@ -583,7 +586,10 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 
 <!-- PRODUCTS -->
 <div id="sec-products" style="display:none">
-  <div class="sec-title">Косметика — канистры 5 000 мл</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div class="sec-title" style="margin:0">Косметика — канистры 5 000 мл</div>
+    <button id="btn-only-selected" onclick="toggleOnlySelected()" class="btn btn-sm" style="font-size:11px;padding:4px 10px;opacity:0.7">Только выбранные</button>
+  </div>
   <div class="prod-header">
     <div></div>
     <div class="prod-col">Продукт</div>
@@ -668,6 +674,9 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 
 <!-- AROMA -->
 <div id="sec-preview" style="display:none">
+  <div style="margin-bottom:12px" class="no-print">
+    <button type="button" onclick="shareCurrentKP()" style="width:100%;padding:12px;border:2px solid var(--gold);background:transparent;color:var(--gold);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px">🔗 Отправить онлайн КП клиенту</button>
+  </div>
   <div class="notice no-print">🖨 Нажмите «PDF / Печать» для сохранения. Текст можно отредактировать перед печатью.</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;padding:14px;background:var(--surface);border:1px solid var(--border);border-radius:8px" class="no-print">
     <div class="fg"><label>Вводный текст КП</label><input id="pv-intro" type="text" placeholder="Как и договаривались, направляем предложение..." oninput="renderPreview()"></div>
@@ -2963,6 +2972,8 @@ const aromaList  = AROMA_MAP[p.id];
         +'</div>';
     }
 
+    if(!on) aromaHtml='';
+
     return '<div class="prod-row'+(on?' on':'')+'" id="row-'+p.id+'" style="--i:'+(idx||0)+'">'
       +'<input type="checkbox"'+(on?' checked':'')+' onchange="'+toggle+'">'
       +'<div><div class="prod-name">'+p.name+'</div><div class="prod-sub">'+(p.vol||p.sub||'')+'</div></div>'
@@ -4774,8 +4785,7 @@ function saveToHistory(){
   };
   saves.unshift(entry);
   localStorage.setItem('asense_kp', JSON.stringify(saves.slice(0,50)));
-  var btn = document.querySelector('[onclick="saveToHistory()"]');
-  if(btn){ var orig=btn.innerHTML; btn.innerHTML='✅ Сохранено!'; btn.style.background='#2E7D32'; btn.style.color='#fff'; setTimeout(function(){btn.innerHTML=orig;btn.style.background='';btn.style.color='';},2000); }
+  showToast('✅ КП сохранено');
   if(document.getElementById('sec-history')&&document.getElementById('sec-history').style.display!=='none') renderHistory();
   syncKPToCloud(entry);
 }
@@ -4966,6 +4976,25 @@ var _u = localStorage.getItem('asense_user');
 var _sideUser = document.getElementById('sidebar-user');
 if(_sideUser && _u) _sideUser.textContent = '👤 ' + _u;
 
+
+var _toastTimer;
+function showToast(msg){
+  var t=document.getElementById('toast');
+  if(!t)return;
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(function(){t.classList.remove('show');},2500);
+}
+
+var _onlySelected=false;
+function toggleOnlySelected(){
+  _onlySelected=!_onlySelected;
+  var sec=document.getElementById('sec-products');
+  var btn=document.getElementById('btn-only-selected');
+  if(sec) sec.classList.toggle('only-selected',_onlySelected);
+  if(btn) btn.classList.toggle('active',_onlySelected);
+}
 
 document.body.addEventListener('click',function(e){
   var t=e.target;
