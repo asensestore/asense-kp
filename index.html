@@ -353,8 +353,10 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 .bottle-loading svg{animation:bottlePour 2.5s cubic-bezier(.4,0,.2,1) infinite;transform-origin:40px 155px}
 .bottle-loading .b-liquid{animation:bottleFill 2.5s cubic-bezier(.4,0,.2,1) infinite}
 body.cbottle,body.cbottle *{cursor:none!important}
-#cbottle{position:fixed;pointer-events:none;z-index:9999;width:28px;height:65px;display:none;will-change:transform}
+#cbottle{position:fixed;pointer-events:none;z-index:9999;width:28px;height:65px;display:none}
 #cbottle.pump-go{opacity:0.9!important}
+#cdot{position:fixed;pointer-events:none;z-index:10000;width:6px;height:6px;border-radius:50%;background:rgba(170,145,100,0.9);box-shadow:0 0 0 1.5px rgba(255,255,255,0.5);margin:-3px 0 0 -3px;display:none;transition:transform 0.12s,opacity 0.12s}
+#cdot.pop{transform:scale(2.5);opacity:0;transition:transform 0.35s ease-out,opacity 0.35s ease-out}
 </style>
 </head>
 <body>
@@ -4991,23 +4993,32 @@ if(_sideUser && _u) _sideUser.textContent = '👤 ' + _u;
     +'</svg>';
   document.body.appendChild(cb);
 
+  var dot=document.createElement('div');
+  dot.id='cdot';
+  document.body.appendChild(dot);
+
   function move(x,y){
-    // hotspot = pump head center (~14px from left, ~4px from top at 28px scale)
-    cb.style.left=(x-14)+'px';
+    // hotspot = nozzle tip (SVG x=70,y=10.5 → at 28px scale: 24.5px,3.7px)
+    cb.style.left=(x-25)+'px';
     cb.style.top=(y-4)+'px';
+    dot.style.left=x+'px';
+    dot.style.top=y+'px';
   }
   function pump(){
     cb.classList.remove('pump-go');
     void cb.offsetWidth;
     cb.classList.add('pump-go');
-    setTimeout(function(){cb.classList.remove('pump-go');},1000);
+    dot.classList.remove('pop');
+    void dot.offsetWidth;
+    dot.classList.add('pop');
+    setTimeout(function(){cb.classList.remove('pump-go');dot.classList.remove('pop');},1000);
   }
 
   document.addEventListener('mousemove',function(e){
     move(e.clientX,e.clientY);
-    if(cb.style.display!=='block'){cb.style.display='block';document.body.classList.add('cbottle');}
+    if(cb.style.display!=='block'){cb.style.display='block';dot.style.display='block';document.body.classList.add('cbottle');}
   });
-  document.addEventListener('mouseleave',function(){cb.style.display='none';document.body.classList.remove('cbottle');});
+  document.addEventListener('mouseleave',function(){cb.style.display='none';dot.style.display='none';document.body.classList.remove('cbottle');});
   document.addEventListener('mousedown',function(e){move(e.clientX,e.clientY);pump();});
 
   document.addEventListener('touchstart',function(e){
