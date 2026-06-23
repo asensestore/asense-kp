@@ -588,7 +588,7 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 <div id="sec-products" style="display:none">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
     <div class="sec-title" style="margin:0">Косметика — канистры 5 000 мл</div>
-    <button id="btn-only-selected" onclick="toggleOnlySelected()" class="btn btn-sm" style="font-size:11px;padding:4px 10px;opacity:0.7">Только выбранные</button>
+    <button id="btn-only-selected" onclick="toggleOnlySelected()" class="btn btn-sm" style="font-size:11px;padding:4px 10px;opacity:0.7">Только выбранные<span id="btn-only-selected-cnt"></span></button>
   </div>
   <div class="prod-header">
     <div></div>
@@ -3033,8 +3033,8 @@ function removeCustomItem(i){
   updateTotals();
 }
 
-function toggleProd(id, val){ state.checked[id]=val; document.getElementById('row-'+id).classList.toggle('on',val); updateTotals(); }
-function toggleEquip(id, val){ state.equip[id]=val;  document.getElementById('row-'+id).classList.toggle('on',val); updateTotals(); }
+function toggleProd(id, val){ state.checked[id]=val; document.getElementById('row-'+id).classList.toggle('on',val); updateTotals(); _isDirty=true; }
+function toggleEquip(id, val){ state.equip[id]=val;  document.getElementById('row-'+id).classList.toggle('on',val); updateTotals(); _isDirty=true; }
 
 function updateTotals(){
   let cans=0, sum=0;
@@ -3072,6 +3072,7 @@ function updateTotals(){
       fb.style.display='none';
     }
   }
+  updateOnlySelectedBtn();
 }
 
 function recalc(){ renderProducts(); }
@@ -4499,6 +4500,7 @@ function renderHistory(query){
 +'<button class="btn btn-sm" title="Отправить ссылку" onclick="shareKP('+s.id+')">🔗</button>'
 +((function(){var sl=JSON.parse(localStorage.getItem('asense_shared_links')||'{}');return sl[String(s.id)]?'<button class="btn btn-sm" style="color:var(--gold)" onclick="showKPViews(\''+sl[String(s.id)]+'\',this)" title="Аналитика просмотров">👁?</button>':'';})())
       +'<button class="btn btn-sm btn-dark" onclick="loadSave('+s.id+')">📂 Открыть</button>'
+      +'<button class="btn btn-sm" onclick="duplicateSave('+s.id+')" title="Создать копию">📋 Копия</button>'
       +'<button class="btn btn-sm" style="color:red;border-color:#ffaaaa" onclick="deleteSave('+s.id+')">🗑</button>'
       +'</div>'
       +'</div>'
@@ -4786,6 +4788,7 @@ function saveToHistory(){
   saves.unshift(entry);
   localStorage.setItem('asense_kp', JSON.stringify(saves.slice(0,50)));
   showToast('✅ КП сохранено');
+  _isDirty = false; clearDraft();
   if(document.getElementById('sec-history')&&document.getElementById('sec-history').style.display!=='none') renderHistory();
   syncKPToCloud(entry);
 }
@@ -4808,6 +4811,7 @@ function loadSave(id){
   }
   if(s.segment){ state.segment=s.segment; var segMap={restaurant:0,hotel:1,spa:2,glamping:3,fitness:4}; var btns=document.querySelectorAll('.seg-btn'); btns.forEach(function(b,i){ b.classList.toggle('active',i===segMap[s.segment]); }); document.getElementById('lbl-seats').textContent=SEG_LABELS[s.segment]||'Посадочных мест'; }
   renderProducts(); recalc(); go('client');
+  _isDirty = false;
 }
 
 
@@ -4958,6 +4962,7 @@ loadProfile();
 renderProducts();
 setTimeout(loadFromCloud, 1000);
 checkAuthAndInit();
+setTimeout(loadDraft, 400);
 
 function bottleLoadStart(){var b=document.getElementById('deco-bottle');if(b)b.classList.add('bottle-loading');}
 function bottleLoadEnd(){var b=document.getElementById('deco-bottle');if(b)b.classList.remove('bottle-loading');}
@@ -5006,6 +5011,93 @@ document.body.addEventListener('click',function(e){
   b.classList.add('pump-go');
   setTimeout(function(){b.classList.remove('pump-go');},1200);
 });
+
+// ===== 1. ДУБЛИРОВАТЬ КП =====
+function duplicateSave(id){
+  var saves = JSON.parse(localStorage.getItem('asense_kp')||'[]');
+  var s = saves.find(function(x){return x.id===id;});
+  if(!s) return;
+  var copy = JSON.parse(JSON.stringify(s));
+  copy.id = Date.now();
+  copy.name = 'Копия — '+s.name;
+  copy.status = 'new';
+  copy.date = new Date().toLocaleDateString('ru-RU');
+  if(copy.inputs){ copy.inputs.name = copy.name; copy.inputs.nextContact = ''; }
+  saves.unshift(copy);
+  localStorage.setItem('asense_kp', JSON.stringify(saves.slice(0,50)));
+  showToast('📋 КП продублировано');
+  renderHistory();
+}
+
+// ===== 2. АВТОСОХРАНЕНИЕ ЧЕРНОВИКА =====
+function saveDraft(){
+  var name = document.getElementById('c-name');
+  if(!name||!name.value.trim()) return; // ничего нет — не сохраняем
+  var draft = {
+    state: JSON.parse(JSON.stringify({checked:state.checked,qty:state.qty,equip:state.equip,productAroma:state.productAroma,aromasCos:[...state.aromasCos],aromasDiff:[...state.aromasDiff],aromasSpa:[...state.aromasSpa],customItems:[...state.customItems],segment:state.segment})),
+    inputs: {}
+  };
+  ['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc'].forEach(function(id){
+    var el=document.getElementById(id); if(el) draft.inputs[id]=el.value;
+  });
+  localStorage.setItem('asense_kp_draft', JSON.stringify(draft));
+}
+
+function loadDraft(){
+  if(!localStorage.getItem('asense_user')) return;
+  var raw = localStorage.getItem('asense_kp_draft');
+  if(!raw) return;
+  try {
+    var draft = JSON.parse(raw);
+    if(!draft||!draft.state) return;
+    Object.assign(state, draft.state);
+    if(draft.state.aromasCos) state.aromasCos=[...draft.state.aromasCos];
+    if(draft.state.aromasDiff) state.aromasDiff=[...draft.state.aromasDiff];
+    if(draft.state.aromasSpa) state.aromasSpa=[...draft.state.aromasSpa];
+    if(draft.state.customItems) state.customItems=[...draft.state.customItems];
+    if(draft.inputs){
+      Object.entries(draft.inputs).forEach(function(e){ var el=document.getElementById(e[0]); if(el) el.value=e[1]||''; });
+    }
+    renderProducts(); recalc();
+    showToast('✍ Черновик восстановлен');
+  } catch(e){}
+}
+
+function clearDraft(){ localStorage.removeItem('asense_kp_draft'); }
+
+setInterval(saveDraft, 30000);
+
+// ===== 4. СВАЙП МЕЖДУ ШАГАМИ =====
+(function(){
+  var _tx=0;
+  var content=document.querySelector('.content');
+  if(!content) return;
+  content.addEventListener('touchstart',function(e){ _tx=e.touches[0].clientX; },{passive:true});
+  content.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-_tx;
+    if(Math.abs(dx)<70) return;
+    var stepper=document.getElementById('kp-stepper');
+    if(!stepper||stepper.style.display==='none') return;
+    if(dx<0) goStep(Math.min(kpStep+1,3));
+    else goStep(Math.max(kpStep-1,0));
+  },{passive:true});
+})();
+
+// ===== 5. ПРЕДУПРЕЖДЕНИЕ ПРИ ВЫХОДЕ =====
+var _isDirty = false;
+document.addEventListener('input',function(e){
+  var id=e.target.id||'';
+  if(['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc'].indexOf(id)>=0) _isDirty=true;
+});
+window.onbeforeunload=function(){ if(_isDirty) return 'Есть несохранённые изменения. Уйти?'; };
+
+// ===== 6. СЧЁТЧИК НА КНОПКЕ "ТОЛЬКО ВЫБРАННЫЕ" =====
+function updateOnlySelectedBtn(){
+  var cnt = 0;
+  PRODUCTS.forEach(function(p){ if(state.checked[p.id]) cnt++; });
+  var span = document.getElementById('btn-only-selected-cnt');
+  if(span) span.textContent = cnt ? ' ('+cnt+')' : '';
+}
 </script>
 </body>
 </html>
