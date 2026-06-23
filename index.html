@@ -344,9 +344,9 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 .b-pump{transform-origin:40px 20px}
 @keyframes pumpDown{0%{transform:translateY(0)}35%{transform:translateY(6px)}100%{transform:translateY(0)}}
 @keyframes squirtOut{0%{opacity:0;transform:translate(0,0) scale(0.5)}20%{opacity:0.8;transform:translate(4px,2px) scale(1)}50%{opacity:0.5;transform:translate(2px,15px) scale(0.8)}80%{opacity:0.2;transform:translate(-2px,35px) scale(0.5)}100%{opacity:0;transform:translate(-4px,55px) scale(0.2)}}
-.pump-go .b-pump{animation:pumpDown 0.4s cubic-bezier(.4,0,.2,1)}
-.pump-go .b-squirt{animation:squirtOut 0.9s cubic-bezier(.4,0,.2,1) 0.1s both}
-.pump-go{opacity:0.2!important}
+.pump-go .b-pump{animation:pumpDown 0.4s cubic-bezier(.4,0,.2,1);animation-duration:0.4s!important}
+.pump-go .b-squirt{animation:squirtOut 0.9s cubic-bezier(.4,0,.2,1) 0.1s both;animation-duration:0.9s!important}
+.pump-go{opacity:0.5!important;transition:none!important}
 @keyframes bottleFill{0%{height:0;y:155}50%{height:90;y:65}60%{height:90;y:65}100%{height:0;y:155}}
 @keyframes bottlePour{0%,50%{transform:rotate(0)}60%{transform:rotate(-30deg)}80%{transform:rotate(-30deg)}100%{transform:rotate(0)}}
 .bottle-loading{opacity:0.15!important}
@@ -4974,8 +4974,7 @@ document.body.addEventListener('click',function(e){
   b.classList.remove('pump-go');
   void b.offsetWidth;
   b.classList.add('pump-go');
-  b.style.opacity='0.25';
-  setTimeout(function(){b.classList.remove('pump-go');b.style.opacity=''},1200);
+  setTimeout(function(){b.classList.remove('pump-go');},1200);
 });
 </script>
 </body>
