@@ -2499,7 +2499,12 @@ async function shareKP(id){
   }
 
   var url = 'https://asense-kp.vercel.app/api/kp?id=' + linkId;
-  
+
+  // Save linkId keyed by save id (для кнопки аналитики и подсветки в истории)
+  var sharedLinks = JSON.parse(localStorage.getItem('asense_shared_links')||'{}');
+  sharedLinks[String(id)] = linkId;
+  localStorage.setItem('asense_shared_links', JSON.stringify(sharedLinks));
+
   // Copy to clipboard
   try {
     await navigator.clipboard.writeText(url);
@@ -2509,6 +2514,7 @@ async function shareKP(id){
     document.body.removeChild(ta);
   }
 
+  if(document.getElementById('sec-history')&&document.getElementById('sec-history').style.display!=='none') renderHistory();
   alert('✅ Ссылка скопирована!\n\n' + url + '\n\nОтправьте клиенту — вы получите уведомление в Telegram когда он откроет.');
 }
 
@@ -4545,9 +4551,43 @@ function renderHistory(query){
       +'<span style="font-size:11px;color:var(--muted);margin-left:6px">Контакт:</span>'
       +'<input type="date" value="'+nc+'" style="padding:3px 8px;border:1px solid '+(overdue?'#f44336':'var(--border)')+';border-radius:6px;font-size:11px;background:var(--surface);color:'+(overdue?'#f44336':'var(--text)')+';font-family:inherit" onchange="updateNextContact('+s.id+',this.value)">'
       +(overdue?'<span style="font-size:10px;color:#f44336">⚠ Просрочен</span>':'')
-      +'</div>';
+      +'</div>'
+      +'<div class="hist-heat" data-sid="'+s.id+'"></div>';
     list.appendChild(item);
   });
+  loadHistoryHeat();
+}
+
+// ===== АВТО-ПОДСВЕТКА ГОРЯЧИХ КЛИЕНТОВ =====
+async function loadHistoryHeat(){
+  var sl = JSON.parse(localStorage.getItem('asense_shared_links')||'{}');
+  var ids = Object.keys(sl);
+  if(!ids.length) return;
+  // map linkId -> saveId
+  var linkToSave = {};
+  ids.forEach(function(k){ linkToSave[sl[k]] = k; });
+  var linkIds = Object.keys(linkToSave);
+  if(!linkIds.length) return;
+  try {
+    var inList = linkIds.map(function(x){return '"'+x+'"';}).join(',');
+    var r = await sbFetch('kp_links?id=in.('+inList+')&select=id,views_count,kp_data');
+    var rows = await r.json();
+    if(!Array.isArray(rows)) return;
+    rows.forEach(function(row){
+      var sid = linkToSave[row.id];
+      if(!sid) return;
+      var box = document.querySelector('.hist-heat[data-sid="'+sid+'"]');
+      if(!box) return;
+      var views = row.views_count||0;
+      var accepted = row.kp_data && row.kp_data.accepted;
+      var label, clr;
+      if(accepted){ label='✅ Клиент принял предложение'; clr='var(--green-t)'; }
+      else if(views>=3){ label='🔥 Горячий — открывал '+views+' раз, позвони'; clr='#FF7043'; }
+      else if(views>=1){ label='🟡 Открыл КП ('+views+')'; clr='#FFB74D'; }
+      else { label='📤 Отправлено, ещё не открыл'; clr='var(--muted)'; }
+      box.innerHTML = '<div style="font-size:11px;padding:5px 10px;margin-top:2px;border-radius:6px;background:'+(accepted||views>=3?'rgba(255,112,67,0.08)':'transparent')+';color:'+clr+';font-weight:'+(accepted||views>=3?'600':'400')+'">'+label+'</div>';
+    });
+  } catch(e){}
 }
 
 
