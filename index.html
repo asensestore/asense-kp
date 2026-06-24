@@ -827,6 +827,8 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
     <!-- Sales summary block -->
     <div id="dash-sales-block" style="margin-bottom:16px"></div>
     <div id="dash-content"></div>
+    <!-- Online KP funnel -->
+    <div id="dash-funnel" style="margin-top:18px"></div>
   </div>
 </div>
 
@@ -4621,6 +4623,71 @@ function renderDashboard(){
       +'<div style="font-size:13px;font-weight:500;color:#f44336;margin-bottom:8px">⚠ Просроченные контакты</div>'
       +overdue.map(function(s){ return '<div style="font-size:12px;padding:4px 0;border-bottom:1px solid rgba(244,67,54,0.1);display:flex;justify-content:space-between"><span>'+s.name+'</span><span style="color:#f44336">'+s.inputs.nextContact+'</span></div>'; }).join('')
       +'</div>' : '');
+
+  renderDashFunnel();
+}
+
+// ===== ВОРОНКА ОНЛАЙН-КП =====
+async function renderDashFunnel(){
+  var el = document.getElementById('dash-funnel');
+  if(!el) return;
+  var em = getMgrEmail();
+  if(!em){
+    el.innerHTML = '<div style="padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--muted)">'
+      +'🔗 <strong style="color:var(--text)">Воронка онлайн-КП</strong><br>Укажите Email в профиле — и здесь появится сводка по отправленным ссылкам (кто открыл, кто принял).</div>';
+    return;
+  }
+  el.innerHTML = '<div style="padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--muted)">⏳ Загружаю воронку онлайн-КП...</div>';
+  try {
+    var r = await sbFetch('kp_links?manager_email=eq.'+encodeURIComponent(em)+'&select=id,client_name,segment,total,views_count,created_at,kp_data&order=created_at.desc&limit=100');
+    var links = await r.json();
+    if(!Array.isArray(links)){ el.innerHTML=''; return; }
+    if(!links.length){
+      el.innerHTML = '<div style="padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--muted)">'
+        +'🔗 <strong style="color:var(--text)">Воронка онлайн-КП</strong><br>Пока нет отправленных ссылок. Откройте КП → «🔗 Отправить ссылку».</div>';
+      return;
+    }
+    var sent = links.length;
+    var opened = links.filter(function(l){return (l.views_count||0)>0;}).length;
+    var hot = links.filter(function(l){return (l.views_count||0)>=3;}).length;
+    var accepted = links.filter(function(l){return l.kp_data && l.kp_data.accepted;}).length;
+    var potential = links.reduce(function(a,l){return a + (Number(l.total)||0);},0);
+
+    var stage = function(label,val,color){
+      return '<div style="flex:1;text-align:center;padding:12px 6px;background:var(--surface);border:1px solid var(--border);border-radius:8px">'
+        +'<div style="font-size:24px;font-weight:600;color:'+color+'">'+val+'</div>'
+        +'<div style="font-size:11px;color:var(--muted);margin-top:3px">'+label+'</div></div>';
+    };
+
+    // hot leads list (opened >=3 or accepted, not yet accepted highlighted)
+    var leads = links.filter(function(l){return (l.views_count||0)>=2 || (l.kp_data&&l.kp_data.accepted);})
+      .sort(function(a,b){ return (b.kp_data&&b.kp_data.accepted?1000:0)+(b.views_count||0) - ((a.kp_data&&a.kp_data.accepted?1000:0)+(a.views_count||0)); })
+      .slice(0,8);
+
+    var leadsHtml = leads.map(function(l){
+      var acc = l.kp_data && l.kp_data.accepted;
+      var heat = acc ? '✅ Принял' : (l.views_count||0)>=3 ? '🔥 Горячий' : '🟡 Смотрит';
+      var clr  = acc ? 'var(--green-t)' : (l.views_count||0)>=3 ? '#FF7043' : '#FFB74D';
+      return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px">'
+        +'<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(l.client_name||'—')+'</span>'
+        +'<span style="color:var(--muted);font-size:11px">👁 '+(l.views_count||0)+'</span>'
+        +'<span style="color:'+clr+';font-weight:500;white-space:nowrap">'+heat+'</span></div>';
+    }).join('');
+
+    el.innerHTML =
+      '<div style="font-size:13px;font-weight:500;color:var(--gold);margin-bottom:10px">🔗 Воронка онлайн-КП</div>'
+      +'<div style="display:flex;gap:8px;margin-bottom:6px">'
+      + stage('Отправлено', sent, 'var(--text)')
+      + stage('Открыли', opened, '#2196F3')
+      + stage('Горячие', hot, '#FF7043')
+      + stage('Приняли', accepted, '#4CAF50')
+      +'</div>'
+      +'<div style="font-size:11px;color:var(--muted);margin:8px 2px 14px">💰 Потенциал: <strong style="color:var(--gold)">'+potential.toLocaleString('ru-RU')+' ₽</strong> · Конверсия в открытие: '+(sent?Math.round(opened/sent*100):0)+'%</div>'
+      +(leadsHtml ? '<div style="padding:12px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px">'
+        +'<div style="font-size:12px;font-weight:500;margin-bottom:6px">📲 Кому звонить</div>'+leadsHtml+'</div>' : '');
+  } catch(e){
+    el.innerHTML = '<div style="padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--muted)">Не удалось загрузить воронку</div>';
+  }
 }
 
 // ===== COPY TO TELEGRAM =====

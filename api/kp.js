@@ -37,17 +37,22 @@ export default async function handler(req, res) {
 
     if (body.action === 'accept' && body.kp_id) {
       const rows = await (await sbFetch('kp_links?id=eq.' + body.kp_id + '&select=*')).json();
-      if (rows && rows.length && rows[0].manager_telegram_id) {
+      if (rows && rows.length) {
         const kp = rows[0];
-        var segRu2 = {restaurant:'Ресторан',hotel:'Отель',spa:'СПА',glamping:'Глэмпинг',fitness:'Фитнес'}[kp.segment] || kp.segment || '';
-        const text = '✅ Клиент принял предложение!\n'
-          + '📋 ' + (kp.client_name||'—') + (segRu2?' ('+segRu2+')':'') + '\n'
-          + '💰 ' + (kp.total ? Number(kp.total).toLocaleString('ru-RU') + ' ₽' : '—') + '\n\n'
-          + '📲 Самое время позвонить и оформить заказ!';
-        await fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ chat_id: kp.manager_telegram_id, text: text })
-        }).catch(function(){});
+        // mark accepted in kp_data (jsonb) so manager dashboard can show funnel
+        const newData = Object.assign({}, kp.kp_data || {}, { accepted: true, accepted_at: new Date().toISOString() });
+        await sbFetch('kp_links?id=eq.' + body.kp_id, 'PATCH', { kp_data: newData }).catch(function(){});
+        if (kp.manager_telegram_id) {
+          var segRu2 = {restaurant:'Ресторан',hotel:'Отель',spa:'СПА',glamping:'Глэмпинг',fitness:'Фитнес'}[kp.segment] || kp.segment || '';
+          const text = '✅ Клиент принял предложение!\n'
+            + '📋 ' + (kp.client_name||'—') + (segRu2?' ('+segRu2+')':'') + '\n'
+            + '💰 ' + (kp.total ? Number(kp.total).toLocaleString('ru-RU') + ' ₽' : '—') + '\n\n'
+            + '📲 Самое время позвонить и оформить заказ!';
+          await fetch('https://api.telegram.org/bot' + TG_TOKEN + '/sendMessage', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ chat_id: kp.manager_telegram_id, text: text })
+          }).catch(function(){});
+        }
       }
       res.status(200).json({ok:true}); return;
     }
