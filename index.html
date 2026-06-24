@@ -17,6 +17,13 @@
   --bg:#0A0A0A;--surface:#111;--border:rgba(240,235,224,0.12);
   --text:#F0EBE0;--muted:rgba(240,235,224,0.35);--muted2:rgba(240,235,224,0.2);--light:#151515;
 }
+/* СВЕТЛАЯ ТЕМА — сайдбар/тёмные панели (--dark,--navy) остаются тёмным «хромом» */
+body.theme-light{
+  --gold:#8a7f55;--stone:#6F6A65;
+  --cream:#FBF8F2;--green-bg:rgba(46,125,50,0.08);--green-t:#2E7D32;
+  --bg:#F4F1EA;--surface:#FFFFFF;--border:rgba(0,0,0,0.12);
+  --text:#1A1A1A;--muted:rgba(0,0,0,0.45);--muted2:rgba(0,0,0,0.25);--light:#EEEAE1;
+}
 body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;font-size:14px;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-0.010em;line-height:1.4}
 
 /* LOGIN SCREEN */
@@ -70,7 +77,7 @@ body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;font-size:14px;back
 .brand-sub{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1.5px;margin-top:6px}
 .nav-section{padding:14px 16px 5px;font-size:9px;color:rgba(255,255,255,0.25);letter-spacing:2px;text-transform:uppercase}
 .nav-item{padding:9px 16px;cursor:pointer;color:rgba(255,255,255,0.55);font-size:13px;display:flex;align-items:center;gap:10px;border-left:2px solid transparent;transition:all .15s}
-.nav-item:hover{background:rgba(176,170,160,0.06);color:var(--text)}
+.nav-item:hover{background:rgba(176,170,160,0.06);color:#F0EBE0}
 .nav-item.active{background:rgba(111,106,101,0.12);color:var(--gold);border-left-color:var(--stone)}
 .sidebar-footer{margin-top:auto;padding:14px 16px;border-top:1px solid #42433d;font-size:10px;color:rgba(255,255,255,0.2);line-height:1.7}
 
@@ -467,6 +474,7 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 <div class="topbar">
   <div class="topbar-title" id="topbar-title">Клиент</div>
   <div class="topbar-actions no-print">
+    <button class="btn btn-sm" id="theme-toggle" onclick="toggleTheme()" title="Сменить тему">🌙</button>
     <button class="btn btn-sm" onclick="saveToHistory()">💾 Сохранить</button>
     <button class="btn btn-sm" onclick="copyKPToTelegram()">✈️ TG</button>
 <button class="btn btn-sm" onclick="showAISettings()" title="Настройки ИИ">🤖</button>
@@ -5286,6 +5294,20 @@ document.addEventListener('input',function(e){
   if(['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc','p-valid','p-spend'].indexOf(id)>=0) _isDirty=true;
 });
 window.onbeforeunload=function(){ if(_isDirty) return 'Есть несохранённые изменения. Уйти?'; };
+
+// ===== ТЕМА =====
+function applyTheme(t){
+  var light = t==='light';
+  document.body.classList.toggle('theme-light', light);
+  var btn = document.getElementById('theme-toggle');
+  if(btn) btn.textContent = light ? '☀️' : '🌙';
+}
+function toggleTheme(){
+  var cur = localStorage.getItem('asense_theme')==='light' ? 'dark' : 'light';
+  localStorage.setItem('asense_theme', cur);
+  applyTheme(cur);
+}
+applyTheme(localStorage.getItem('asense_theme')||'dark');
 
 // ===== ШАБЛОНЫ ПОДБОРА =====
 function getTemplates(){ return JSON.parse(localStorage.getItem('asense_templates')||'[]'); }
