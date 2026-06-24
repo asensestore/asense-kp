@@ -582,6 +582,14 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 
 <!-- PRODUCTS -->
 <div id="sec-products" style="display:none">
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:8px">
+    <span style="font-size:12px;color:var(--muted)">📑 Шаблон:</span>
+    <select id="tpl-select" onchange="applyCustomTemplate(this.value)" style="flex:1;min-width:130px;padding:5px 9px;border:1px solid var(--border);border-radius:6px;background:var(--dark);color:var(--text);font-size:12px;font-family:inherit;outline:none">
+      <option value="">— выбрать набор продуктов —</option>
+    </select>
+    <button class="btn btn-sm" onclick="saveAsTemplate()" title="Сохранить текущий набор как шаблон">💾 Сохранить набор</button>
+    <button class="btn btn-sm" onclick="deleteTemplate()" title="Удалить выбранный шаблон" style="color:#e08;border-color:#e0888855">🗑</button>
+  </div>
   <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
     <input id="prod-search" type="search" placeholder="Поиск продукта..." oninput="filterProds(this.value)" style="flex:1;min-width:140px;padding:6px 11px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--text);font-size:13px;font-family:inherit;outline:none">
     <button class="btn btn-sm" onclick="selectAllProds(true)" title="Выбрать все видимые">✓ Все</button>
@@ -2899,7 +2907,7 @@ function go(id){
   if(mob) mob.classList.add('active');
   if(id==='preview')  renderPreview();
     if(id==='history')  renderHistory();
-  if(id==='products') renderProducts();
+  if(id==='products'){ renderProducts(); renderTemplateSelect(); }
   if(id==='prices')  renderPrices();
   if(id==='faq')     renderFAQ();
   if(id==='dashboard') renderDashboard();
@@ -5122,6 +5130,73 @@ document.addEventListener('input',function(e){
   if(['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc'].indexOf(id)>=0) _isDirty=true;
 });
 window.onbeforeunload=function(){ if(_isDirty) return 'Есть несохранённые изменения. Уйти?'; };
+
+// ===== ШАБЛОНЫ ПОДБОРА =====
+function getTemplates(){ return JSON.parse(localStorage.getItem('asense_templates')||'[]'); }
+
+function renderTemplateSelect(){
+  var sel = document.getElementById('tpl-select');
+  if(!sel) return;
+  var cur = sel.value;
+  var tpls = getTemplates();
+  sel.innerHTML = '<option value="">— выбрать набор продуктов —</option>'
+    + tpls.map(function(t){ return '<option value="'+t.id+'">'+t.name+' ('+t.count+' поз.)</option>'; }).join('');
+  if(cur) sel.value = cur;
+}
+
+function saveAsTemplate(){
+  var cnt=0; PRODUCTS.forEach(function(p){if(state.checked[p.id])cnt++;});
+  EQUIP.forEach(function(e){if(state.equip[e.id])cnt++;});
+  if(!cnt){ showToast('⚠ Сначала выберите продукты'); return; }
+  var name = prompt('Название шаблона:', 'Мой набор');
+  if(!name) return;
+  name = name.trim(); if(!name) return;
+  var tpls = getTemplates();
+  tpls.unshift({
+    id: 'tpl_'+Date.now(),
+    name: name,
+    count: cnt,
+    data: JSON.parse(JSON.stringify({
+      checked: state.checked, qty: state.qty, equip: state.equip,
+      productAroma: state.productAroma,
+      customItems: state.customItems, segment: state.segment
+    }))
+  });
+  localStorage.setItem('asense_templates', JSON.stringify(tpls.slice(0,30)));
+  renderTemplateSelect();
+  showToast('💾 Шаблон «'+name+'» сохранён');
+}
+
+function applyCustomTemplate(id){
+  if(!id) return;
+  var t = getTemplates().find(function(x){return x.id===id;});
+  if(!t||!t.data) return;
+  var d = t.data;
+  state.checked = JSON.parse(JSON.stringify(d.checked||{}));
+  state.qty = JSON.parse(JSON.stringify(d.qty||{}));
+  state.equip = JSON.parse(JSON.stringify(d.equip||{}));
+  state.productAroma = JSON.parse(JSON.stringify(d.productAroma||{}));
+  state.customItems = JSON.parse(JSON.stringify(d.customItems||[]));
+  if(d.segment){
+    state.segment = d.segment;
+    var segMap={restaurant:0,hotel:1,spa:2,glamping:3,fitness:4};
+    document.querySelectorAll('.seg-btn').forEach(function(b,i){ b.classList.toggle('active',i===segMap[d.segment]); });
+    var lblS=document.getElementById('lbl-seats'); if(lblS) lblS.textContent=SEG_LABELS[d.segment]||'Посадочных мест';
+  }
+  renderProducts(); recalc(); renderCustomItems(); _isDirty=true;
+  showToast('📑 Шаблон «'+t.name+'» применён');
+}
+
+function deleteTemplate(){
+  var sel = document.getElementById('tpl-select');
+  if(!sel||!sel.value){ showToast('⚠ Выберите шаблон для удаления'); return; }
+  var t = getTemplates().find(function(x){return x.id===sel.value;});
+  if(!t) return;
+  if(!confirm('Удалить шаблон «'+t.name+'»?')) return;
+  localStorage.setItem('asense_templates', JSON.stringify(getTemplates().filter(function(x){return x.id!==sel.value;})));
+  renderTemplateSelect();
+  showToast('🗑 Шаблон удалён');
+}
 
 // ===== ПОИСК ПРОДУКТОВ =====
 function filterProds(q){
