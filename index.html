@@ -523,6 +523,7 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
     <div class="param-block"><label>Рабочих дней / мес</label><input id="p-days" type="number" value="26" oninput="recalc()"></div>
     <div class="param-block"><label style="display:flex;align-items:center">Скидка %<i class="tip" data-tip="Уменьшает все цены в КП на указанный процент. 0 = базовые цены из прайса">?</i></label><input id="p-disc" type="number" value="0" min="0" max="90" oninput="recalc()"></div>
     <div class="param-block"><label style="display:flex;align-items:center">Действительно до<i class="tip" data-tip="Дата окончания предложения. Покажется в КП и создаёт ощущение срочности. Пусто — не показывается">?</i></label><input id="p-valid" type="date" oninput="recalc()" style="padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-size:14px;background:var(--surface);color:var(--text);font-family:inherit;outline:none;width:100%"></div>
+    <div class="param-block"><label style="display:flex;align-items:center">Сейчас тратит ₽/мес<i class="tip" data-tip="Текущие расходы клиента на косметику в месяц. Если заполнить — в КП появится блок экономии за год. Пусто — не показывается">?</i></label><input id="p-spend" type="number" min="0" placeholder="0" oninput="recalc()"></div>
   </div>
   <div id="washrooms-block" style="margin-top:-8px;margin-bottom:12px;display:none">
 <div class="param-block" style="max-width:200px">
@@ -3272,6 +3273,32 @@ function buildKPHtml(forPrint=false){
 
   const managerLine = manager ? `<div style="margin-top:12px;font-size:11px;color:#999">Менеджер: ${manager}</div>` : '';
 
+  // Блок экономии «до/после»
+  let savingsHtml = '';
+  const spendEl = document.getElementById('p-spend');
+  const curSpend = spendEl && spendEl.value ? parseInt(spendEl.value)||0 : 0;
+  if(curSpend > 0){
+    const diffMonth = curSpend - total;
+    const cell = (lbl,val,color)=>`<td style="padding:10px 14px;text-align:center"><div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:.5px">${lbl}</div><div style="font-size:16px;font-weight:600;color:${color};margin-top:2px">${val}</div></td>`;
+    if(diffMonth > 0){
+      savingsHtml = `<div style="margin-top:16px;border:1px solid #C9A84C;border-radius:8px;overflow:hidden">
+        <div style="background:#1A1A2E;color:#C9A84C;padding:8px 14px;font-size:12px;font-weight:600">💰 Ваша выгода с Asense</div>
+        <table style="width:100%;border-collapse:collapse"><tr>
+          ${cell('Сейчас', fmt(curSpend)+'/мес', '#777')}
+          ${cell('С Asense', fmt(total)+'/мес', '#1A1A2E')}
+          ${cell('Экономия в год', fmt(diffMonth*12), '#2E7D32')}
+        </tr></table></div>`;
+    } else {
+      savingsHtml = `<div style="margin-top:16px;border:1px solid #ddd;border-radius:8px;overflow:hidden">
+        <div style="background:#1A1A2E;color:#C9A84C;padding:8px 14px;font-size:12px;font-weight:600">📊 Сравнение расходов</div>
+        <table style="width:100%;border-collapse:collapse"><tr>
+          ${cell('Сейчас', fmt(curSpend)+'/мес', '#777')}
+          ${cell('С Asense', fmt(total)+'/мес', '#1A1A2E')}
+          ${cell('Премиум-качество', '+ сервис', '#C9A84C')}
+        </tr></table></div>`;
+    }
+  }
+
   return `<div class="kp-doc" id="kp-printable">
     <div class="kp-hdr">
       <div>
@@ -3293,6 +3320,7 @@ function buildKPHtml(forPrint=false){
       <thead><tr><th>Продукт</th><th>Кол-во</th><th>Цена / ед.</th><th>Сумма</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
+    ${savingsHtml}
     ${aromaNote}
     ${managerLine}
     ${footerNote ? `<div style="margin-top:12px;padding:10px 14px;background:#F9F5EE;border-radius:5px;font-size:11px;color:#555">${footerNote}</div>` : ''}
@@ -4940,6 +4968,7 @@ function saveToHistory(){
       days:document.getElementById('p-days').value,
       disc:document.getElementById('p-disc').value,
       valid:(document.getElementById('p-valid')||{}).value||'',
+      spend:(document.getElementById('p-spend')||{}).value||'',
       nextContact:''
     }
   };
@@ -4967,6 +4996,7 @@ function loadSave(id){
     if(s.inputs.days) document.getElementById('p-days').value=s.inputs.days;
     if(s.inputs.disc) document.getElementById('p-disc').value=s.inputs.disc;
     var pv=document.getElementById('p-valid'); if(pv) pv.value=s.inputs.valid||'';
+    var ps=document.getElementById('p-spend'); if(ps) ps.value=s.inputs.spend||'';
   }
   if(s.segment){ state.segment=s.segment; var segMap={restaurant:0,hotel:1,spa:2,glamping:3,fitness:4}; var btns=document.querySelectorAll('.seg-btn'); btns.forEach(function(b,i){ b.classList.toggle('active',i===segMap[s.segment]); }); document.getElementById('lbl-seats').textContent=SEG_LABELS[s.segment]||'Посадочных мест'; }
   renderProducts(); recalc(); go('client');
@@ -5196,7 +5226,7 @@ function saveDraft(){
     state: JSON.parse(JSON.stringify({checked:state.checked,qty:state.qty,equip:state.equip,productAroma:state.productAroma,aromasCos:[...state.aromasCos],aromasDiff:[...state.aromasDiff],aromasSpa:[...state.aromasSpa],customItems:[...state.customItems],segment:state.segment})),
     inputs: {}
   };
-  ['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc','p-valid'].forEach(function(id){
+  ['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc','p-valid','p-spend'].forEach(function(id){
     var el=document.getElementById(id); if(el) draft.inputs[id]=el.value;
   });
   localStorage.setItem('asense_kp_draft', JSON.stringify(draft));
@@ -5253,7 +5283,7 @@ setInterval(saveDraft, 30000);
 var _isDirty = false;
 document.addEventListener('input',function(e){
   var id=e.target.id||'';
-  if(['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc','p-valid'].indexOf(id)>=0) _isDirty=true;
+  if(['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc','p-valid','p-spend'].indexOf(id)>=0) _isDirty=true;
 });
 window.onbeforeunload=function(){ if(_isDirty) return 'Есть несохранённые изменения. Уйти?'; };
 
