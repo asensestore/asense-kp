@@ -522,6 +522,7 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
     <div class="param-block"><label id="lbl-guests">Гостей / день</label><input id="p-guests" type="number" value="80" oninput="recalc()"></div>
     <div class="param-block"><label>Рабочих дней / мес</label><input id="p-days" type="number" value="26" oninput="recalc()"></div>
     <div class="param-block"><label style="display:flex;align-items:center">Скидка %<i class="tip" data-tip="Уменьшает все цены в КП на указанный процент. 0 = базовые цены из прайса">?</i></label><input id="p-disc" type="number" value="0" min="0" max="90" oninput="recalc()"></div>
+    <div class="param-block"><label style="display:flex;align-items:center">Действительно до<i class="tip" data-tip="Дата окончания предложения. Покажется в КП и создаёт ощущение срочности. Пусто — не показывается">?</i></label><input id="p-valid" type="date" oninput="recalc()" style="padding:7px 9px;border:1px solid var(--border);border-radius:7px;font-size:14px;background:var(--surface);color:var(--text);font-family:inherit;outline:none;width:100%"></div>
   </div>
   <div id="washrooms-block" style="margin-top:-8px;margin-bottom:12px;display:none">
 <div class="param-block" style="max-width:200px">
@@ -3178,6 +3179,11 @@ function buildKPHtml(forPrint=false){
   const name=v('c-name'), contact=v('c-contact'), city=v('c-city'), addr=v('c-address'), phone=v('c-phone'), manager=v('c-manager'), note=v('c-note');
   const segName={restaurant:'ресторан',hotel:'отель',spa:'спа-комплекс',glamping:'глэмпинг',fitness:'фитнес-клуб'}[state.segment];
   const date = new Date().toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'});
+  const validEl = document.getElementById('p-valid');
+  let validStr = '';
+  if(validEl && validEl.value){
+    try { validStr = new Date(validEl.value).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}); } catch(e){}
+  }
 
   const metaParts=[];
   if(name) metaParts.push(`<strong>${name}</strong>`);
@@ -3270,7 +3276,7 @@ function buildKPHtml(forPrint=false){
         +7 (495) 970-86-40 · commerce@asense.store
       </div>
     </div>
-    <div class="kp-date">${date}</div>
+    <div class="kp-date">${date}${validStr?` · <span style="color:#C9A84C;font-weight:500">действительно до ${validStr}</span>`:''}</div>
     <div class="kp-heading">Коммерческое предложение</div>
     <p class="kp-intro">${introParts.join(' ')}</p>
     <table class="kp-t">
@@ -4922,6 +4928,7 @@ function saveToHistory(){
       guests:document.getElementById('p-guests').value,
       days:document.getElementById('p-days').value,
       disc:document.getElementById('p-disc').value,
+      valid:(document.getElementById('p-valid')||{}).value||'',
       nextContact:''
     }
   };
@@ -4948,6 +4955,7 @@ function loadSave(id){
     if(s.inputs.guests) document.getElementById('p-guests').value=s.inputs.guests;
     if(s.inputs.days) document.getElementById('p-days').value=s.inputs.days;
     if(s.inputs.disc) document.getElementById('p-disc').value=s.inputs.disc;
+    var pv=document.getElementById('p-valid'); if(pv) pv.value=s.inputs.valid||'';
   }
   if(s.segment){ state.segment=s.segment; var segMap={restaurant:0,hotel:1,spa:2,glamping:3,fitness:4}; var btns=document.querySelectorAll('.seg-btn'); btns.forEach(function(b,i){ b.classList.toggle('active',i===segMap[s.segment]); }); document.getElementById('lbl-seats').textContent=SEG_LABELS[s.segment]||'Посадочных мест'; }
   renderProducts(); recalc(); go('client');
@@ -5177,7 +5185,7 @@ function saveDraft(){
     state: JSON.parse(JSON.stringify({checked:state.checked,qty:state.qty,equip:state.equip,productAroma:state.productAroma,aromasCos:[...state.aromasCos],aromasDiff:[...state.aromasDiff],aromasSpa:[...state.aromasSpa],customItems:[...state.customItems],segment:state.segment})),
     inputs: {}
   };
-  ['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc'].forEach(function(id){
+  ['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc','p-valid'].forEach(function(id){
     var el=document.getElementById(id); if(el) draft.inputs[id]=el.value;
   });
   localStorage.setItem('asense_kp_draft', JSON.stringify(draft));
@@ -5234,7 +5242,7 @@ setInterval(saveDraft, 30000);
 var _isDirty = false;
 document.addEventListener('input',function(e){
   var id=e.target.id||'';
-  if(['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc'].indexOf(id)>=0) _isDirty=true;
+  if(['c-name','c-contact','c-city','c-address','c-phone','c-manager','c-note','p-guests','p-days','p-disc','p-valid'].indexOf(id)>=0) _isDirty=true;
 });
 window.onbeforeunload=function(){ if(_isDirty) return 'Есть несохранённые изменения. Уйти?'; };
 
