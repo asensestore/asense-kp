@@ -3045,7 +3045,7 @@ function renderCustomItems(){
   if(!el) return;
   if(!state.customItems.length){el.innerHTML='';return;}
   el.innerHTML = state.customItems.map((item,i)=>`
-    <div style="display:grid;grid-template-columns:1fr 110px 90px 36px;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);margin-bottom:5px">
+    <div style="display:grid;grid-template-columns:1fr 110px 90px 36px 36px;gap:8px;align-items:center;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);margin-bottom:5px">
       <input type="text" value="${item.name}" placeholder="Название позиции"
         style="padding:6px 9px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--surface);color:var(--text);font-family:inherit"
         oninput="state.customItems[${i}].name=this.value;_isDirty=true">
@@ -3058,7 +3058,8 @@ function renderCustomItems(){
       <input type="number" value="${item.qty}" min="1" placeholder="Кол-во"
         style="padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--surface);color:var(--text);font-family:inherit;width:100%"
         oninput="state.customItems[${i}].qty=+this.value;updateTotals();_isDirty=true">
-      <button onclick="removeCustomItem(${i})" style="width:32px;height:32px;border:1px solid #ffcccc;border-radius:6px;background:none;color:#e44;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px">×</button>
+      <button onclick="duplicateCustomItem(${i})" title="Дублировать позицию" style="width:32px;height:32px;border:1px solid var(--border);border-radius:6px;background:none;color:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px">⧉</button>
+      <button onclick="removeCustomItem(${i})" title="Удалить" style="width:32px;height:32px;border:1px solid #ffcccc;border-radius:6px;background:none;color:#e44;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px">×</button>
     </div>`).join('');
 }
 
@@ -3066,6 +3067,15 @@ function addCustomItem(){
   state.customItems.push({name:'', price:0, qty:1});
   renderCustomItems();
   _isDirty=true;
+}
+function duplicateCustomItem(i){
+  var src = state.customItems[i];
+  if(!src) return;
+  state.customItems.splice(i+1, 0, {name:src.name, price:src.price, qty:src.qty});
+  renderCustomItems();
+  updateTotals();
+  _isDirty=true;
+  showToast('⧉ Позиция продублирована');
 }
 function removeCustomItem(i){
   state.customItems.splice(i,1);
@@ -3755,12 +3765,13 @@ function exportBackupExcel(){
   const wb = XLSX.utils.book_new();
 
   // Sheet 1: КП
-  const rows1 = [['ID','Название','Сегмент','Дата','Итого','Город','Контакт','Менеджер']];
+  var statusNamesX = {new:'Новый',sent:'Отправлен',negotiation:'Переговоры',paid:'Оплачен'};
+  const rows1 = [['ID','Название','Сегмент','Дата','Итого','Статус','След. контакт','Город','Контакт','Менеджер']];
   saves.forEach(s=>{
-    rows1.push([s.id, s.name, s.segment, s.date, s.total||'', s.inputs?.city||'', s.inputs?.contact||'', s.inputs?.manager||'']);
+    rows1.push([s.id, s.name, s.segment, s.date, s.total||'', statusNamesX[s.status||'new']||'', (s.inputs&&s.inputs.nextContact)||'', s.inputs?.city||'', s.inputs?.contact||'', s.inputs?.manager||'']);
   });
   const ws1 = XLSX.utils.aoa_to_sheet(rows1);
-  ws1['!cols']=[{wch:14},{wch:28},{wch:12},{wch:12},{wch:14},{wch:20},{wch:20},{wch:16}];
+  ws1['!cols']=[{wch:14},{wch:28},{wch:12},{wch:12},{wch:14},{wch:12},{wch:13},{wch:20},{wch:20},{wch:16}];
   XLSX.utils.book_append_sheet(wb, ws1, 'История КП');
 
   // Sheet 2: Цены
