@@ -461,8 +461,8 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
   <div class="nav-item" onclick="go('profile')" id="nav-profile">👤 Мой профиль</div>
 <div class="nav-item" onclick="go('ai')" id="nav-ai">🤖 ИИ-советник</div>
   <div class="nav-item" onclick="go('training')" id="nav-training">📖 Обучение</div>
-  <div class="nav-item" onclick="window.startQuiz?window.startQuiz():alert('Ошибка загрузки теста')" id="nav-quiz" style="cursor:pointer;color:#B0AAA0;background:rgba(176,170,160,0.08);border:1px solid rgba(176,170,160,0.15);border-radius:8px;margin:4px 8px;padding:10px 16px;text-align:center;position:relative;z-index:10">🎯 Тест на знания</div>
-  <div class="sidebar-footer">
+  <button onclick="startQuiz()" style="display:block;width:calc(100% - 16px);margin:8px 8px;padding:10px 16px;background:rgba(176,170,160,0.08);border:1px solid rgba(176,170,160,0.15);border-radius:8px;color:#B0AAA0;cursor:pointer;font-size:13px;font-family:inherit;text-align:left">🎯 Тест на знания</button>
+    <div class="sidebar-footer">
     <div id="sidebar-user" style="color:var(--gold);font-weight:500;margin-bottom:6px;font-size:12px"></div>
     ООО «АСЕНС»<br>
     commerce@asense.store<br>
@@ -5633,7 +5633,7 @@ function showResult(){
   }catch(e){}
 }
 
-// Auto-launch: Monday 29.06.2026 at 11:00 Moscow
+// Auto-launch: Monday 29.06.2026 at 11:00 Moscow (without blocking)
 (function(){
   function checkAutoQuiz(){
     var now=new Date();
@@ -5641,7 +5641,7 @@ function showResult(){
     if(msk.getFullYear()===2026&&msk.getMonth()===5&&msk.getDate()===29&&msk.getHours()>=11&&msk.getHours()<12){
       if(!sessionStorage.getItem('quiz_auto_launched')){
         sessionStorage.setItem('quiz_auto_launched','1');
-        startQuiz(true);
+        startQuiz(false);
       }
     }
   }
