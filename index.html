@@ -364,6 +364,8 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
 #sec-products.only-selected .prod-row:not(.on){display:none!important}
 #btn-only-selected.active{opacity:1;background:var(--stone);color:#fff}
 .stp-step:not(.stp-active):hover .stp-num{border-color:var(--gold);color:var(--gold)}
+
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:0.7}}
 </style>
 </head>
 <body>
@@ -1463,6 +1465,8 @@ details[open] .acc-sum::before{transform:rotate(90deg)}
 <button onclick="go('faq');toggleMobMenu()" class="mob-btn" style="padding:8px 4px"><span class="mob-icon">💬</span><span>FAQ</span></button>
 <button onclick="go('kb');toggleMobMenu()" class="mob-btn" style="padding:8px 4px"><span class="mob-icon">📚</span><span>База</span></button>
 <button onclick="go('profile');toggleMobMenu()" class="mob-btn" style="padding:8px 4px"><span class="mob-icon">👤</span><span>Профиль</span></button>
+<button onclick="go('training');toggleMobMenu()" class="mob-btn" style="padding:8px 4px"><span class="mob-icon">📖</span><span>Обучение</span></button>
+<button onclick="startQuiz()" class="mob-btn" style="padding:8px 4px;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.2)"><span class="mob-icon">🎯</span><span>Тест</span></button>
 <button onclick="go('training');toggleMobMenu()" class="mob-btn" style="padding:8px 4px"><span class="mob-icon">📖</span><span>Обучение</span></button>
 </div>
 </div>
@@ -3384,7 +3388,46 @@ function printKP(){
 </style></head><body>
   ${kp.outerHTML}
   <button class="print-btn" onclick="window.print()">Печать / Сохранить PDF</button>
-  </body></html>`);
+  
+<!-- QUIZ OVERLAY -->
+<div id="quiz-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:radial-gradient(ellipse at center,#1a1a3e 0%,#0a0a0a 70%);overflow-y:auto">
+<div id="quiz-container" style="max-width:700px;margin:0 auto;padding:20px;min-height:100vh;display:flex;flex-direction:column;justify-content:center">
+  <div id="quiz-header" style="text-align:center;margin-bottom:20px">
+    <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(176,170,160,0.4);margin-bottom:8px">ТЕСТ НА ЗНАНИЯ</div>
+    <div style="font-size:22px;font-weight:600;color:#F0EBE0;font-family:'Space Grotesk',sans-serif">Asénse</div>
+    <div id="quiz-progress-text" style="font-size:13px;color:rgba(176,170,160,0.5);margin-top:8px">Вопрос 1 из 21</div>
+  </div>
+  <div id="quiz-timer-wrap" style="text-align:center;margin-bottom:20px">
+    <svg width="80" height="80" viewBox="0 0 80 80" id="quiz-timer-svg">
+      <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(176,170,160,0.1)" stroke-width="3"/>
+      <circle id="quiz-timer-circle" cx="40" cy="40" r="36" fill="none" stroke="#B0AAA0" stroke-width="3" stroke-dasharray="226" stroke-dashoffset="0" transform="rotate(-90 40 40)" style="transition:stroke-dashoffset 1s linear"/>
+    </svg>
+    <div id="quiz-timer-text" style="margin-top:-58px;font-size:24px;font-weight:600;color:#F0EBE0;height:46px;line-height:46px">2:00</div>
+  </div>
+  <div id="quiz-question" style="text-align:center;font-size:16px;color:#F0EBE0;line-height:1.6;margin-bottom:24px;padding:0 12px"></div>
+  <div id="quiz-answers" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px"></div>
+  <div id="quiz-textarea-wrap" style="display:none;margin-bottom:20px">
+    <textarea id="quiz-textarea" rows="4" style="width:100%;background:rgba(176,170,160,0.05);border:1px solid rgba(176,170,160,0.2);border-radius:12px;color:#F0EBE0;font-size:14px;padding:12px;resize:none;font-family:'Space Grotesk',sans-serif" placeholder="Напишите ваш ответ..."></textarea>
+    <button onclick="submitTextAnswer()" style="margin-top:10px;width:100%;padding:12px;background:#6F6A65;color:#F0EBE0;border:none;border-radius:8px;font-size:14px;cursor:pointer">Ответить</button>
+  </div>
+  <div id="quiz-lifelines" style="display:flex;justify-content:center;gap:16px;margin-bottom:16px">
+    <button onclick="useLifeline('5050')" id="ll-5050" style="width:48px;height:48px;border-radius:50%;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.3);color:#F0EBE0;font-size:12px;cursor:pointer;font-weight:600">50:50</button>
+    <button onclick="useLifeline('phone')" id="ll-phone" style="width:48px;height:48px;border-radius:50%;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.3);color:#F0EBE0;font-size:16px;cursor:pointer">📞</button>
+    <button onclick="useLifeline('audience')" id="ll-audience" style="width:48px;height:48px;border-radius:50%;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.3);color:#F0EBE0;font-size:16px;cursor:pointer">👥</button>
+  </div>
+  <div id="quiz-lifeline-result" style="text-align:center;font-size:13px;color:rgba(176,170,160,0.6);margin-bottom:12px;min-height:20px"></div>
+  <div id="quiz-dots" style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:16px"></div>
+</div>
+<div id="quiz-result" style="display:none;text-align:center;padding:40px 20px">
+  <div style="font-size:48px;margin-bottom:16px" id="quiz-result-emoji"></div>
+  <div style="font-size:22px;font-weight:600;color:#F0EBE0;margin-bottom:8px" id="quiz-result-title"></div>
+  <div style="font-size:16px;color:rgba(176,170,160,0.6);margin-bottom:24px" id="quiz-result-subtitle"></div>
+  <div id="quiz-result-stats" style="font-size:14px;color:rgba(176,170,160,0.5);margin-bottom:32px"></div>
+  <button onclick="closeQuiz()" style="padding:14px 40px;background:#6F6A65;color:#F0EBE0;border:none;border-radius:8px;font-size:16px;cursor:pointer">Закрыть</button>
+</div>
+<button id="quiz-close-btn" onclick="closeQuiz()" style="display:none;position:fixed;top:16px;right:16px;z-index:100000;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.2);color:#F0EBE0;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer">✕</button>
+</div>
+</body></html>`);
   w.document.close();
 }
 
@@ -4469,7 +4512,8 @@ function printRetailKP(){
     +'.foot{margin-top:18px;padding-top:12px;border-top:1px solid #eee;font-size:10px;color:#999;text-align:center;line-height:1.8}'
     +'.foot strong{color:#1a1a1a}'
     +'.btn{display:block;margin:20px auto;padding:10px 28px;background:#1A1A2E;color:#fff;border:none;border-radius:7px;font-size:13px;cursor:pointer}'
-    +'@media print{.btn{display:none}body{padding:20px}}</style></head><body>'
+    +'@media print{.btn{display:none}body{padding:20px}}'
++'</style></head><body>'
     +'<div class="hdr"><div>'
     +'<img src="data:image/png;base64,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" style="height:28px;display:block" alt="Asense">'
     +'<div style="font-size:9px;color:#999;letter-spacing:1px;margin-top:3px">Производитель премиальной косметики</div>'
@@ -5438,6 +5482,172 @@ function updateOnlySelectedBtn(){
   var span = document.getElementById('btn-only-selected-cnt');
   if(span) span.textContent = cnt ? ' ('+cnt+')' : '';
 }
+
+// === QUIZ: Кто хочет стать миллионером ===
+var quizData=[
+{q:"Клиент из Москвы — рыбный ресторан на Патриарших. Хочет аромат Sea Salt & Wood в мыло и диффузор. Ваши действия?",type:"choice",opts:["Оформляем заказ, идеальный матч","Мыло оформляем, диффузор предлагаем другой","Отказываем по обоим — аромат зафиксирован за «Рыба Моя» в Москве","Мыло отказываем, диффузор оформляем"],correct:2,block:"Ароматы"},
+{q:"Клиент-отель просит диффузор Virgin Lemongrass. Что ответить?",type:"choice",opts:["Отличный выбор, оформляем","Этот аромат не существует в диффузоре, предложить Meditation или White Lotus","Можем сделать под заказ, но дороже","Есть, но аромат тонкий — предупредить"],correct:1,block:"Ароматы"},
+{q:"Назовите единственный тёплый аромат в косметической линейке. Почему он не приторный?",type:"text",answer:"Tobacco Leaf & Vanilla. Имбирь нейтрализует приторность",block:"Ароматы"},
+{q:"Какие три диффузора ГАРАНТИРОВАННО не подведут по стойкости?",type:"choice",opts:["Cannabis, Lemongrass, Tobacco","Oud Wealth, Meditation Session, White Lotus","Hammam Lover, Cannabis, Sea Salt","Tobacco, Oud Wealth, Lemongrass"],correct:1,block:"Ароматы"},
+{q:"Клиент-ресторатор в Казани хочет Sea Salt & Wood в мыло. Можно ли оформить?",type:"choice",opts:["Нет, аромат запрещён для всех ресторанов","Да, ограничение действует только на рестораны в Москве","Только если ресторан не рыбный","Нужно согласовать с «Рыба Моя»"],correct:1,block:"Ароматы"},
+{q:"Ароматы «спешал» (Sea Salt, Vetiver & Rosemary) есть в:",type:"choice",opts:["Во всех продуктах включая шампунь и кондиционер","Только в продуктах для тела (мыло, гель, лосьон)","Только в диффузорах и спреях","Во всех кроме крем-баттера"],correct:1,block:"Ароматы"},
+{q:"Клиент выбирает между Cannabis и Lemongrass для отеля на 200 номеров. Какой порекомендуете и почему?",type:"text",answer:"Lemongrass — универсальный, подходит всем гостям, беспроигрышный для большого номерного фонда",block:"Ароматы"},
+{q:"Клиент хочет матовое стекло 500 мл. Ваш ответ?",type:"choice",opts:["Конечно, есть в наличии","Матовое стекло только 300 мл, но можем сделать ручное матирование под заказ","Сделаем под заказ от 1000 штук","Есть, но дороже на 30%"],correct:1,block:"Форматы"},
+{q:"Клиент: «Чем ваши флаконы лучше? У Овсянникова тоже матовые». Напишите ответ.",type:"text",answer:"У них литой матовый — не видно уровня состава. У нас видно + soft-touch от обжига",block:"Форматы"},
+{q:"Помпа при первом заказе — бесплатно. Но в счёте она стоит:",type:"choice",opts:["0 ₽","1 ₽","100 ₽","300 ₽"],correct:1,block:"Форматы"},
+{q:"Чем отличается мыло от геля для душа по составу?",type:"choice",opts:["Ничем, один продукт в разной упаковке","Мыло — антибактериальное, гель — деликатный кокосовый","Гель увлажняет, мыло нет","Мыло гуще, гель жиже"],correct:1,block:"Форматы"},
+{q:"Клиент: «Ваш гель для душа увлажняет кожу?» Напишите ответ.",type:"text",answer:"Гель не увлажняет, но на кокосовой основе не смывает гидролипидный баланс — нет сухости",block:"Форматы"},
+{q:"В каком единственном аромате существует мыло-скраб?",type:"choice",opts:["Pure Cannabis","Sea Salt & Wood","Vetiver & Rosemary","Tobacco Leaf & Vanilla"],correct:2,block:"Форматы"},
+{q:"Чем отличается пакет образцов для отеля от пакета для ресторана? Что входит в каждый?",type:"text",answer:"Отель: все продукты + колбочки ароматов. Ресторан: все ароматы мыла + лосьон",block:"Тактика"},
+{q:"Клиент-отель: «Нас интересуют только диффузоры, зачем прислали шампуни?» Что ответить?",type:"text",answer:"Полный пакет — нам нравится ваш проект. Для диффузора — колбочки. Косметика — вдруг понравится лично",block:"Тактика"},
+{q:"Клиент просит тестовый период бесплатно. Ваша позиция?",type:"choice",opts:["Соглашаемся, чтобы не потерять","Тест всегда за деньги, но можем дать цену как при заказе от 150К","Бесплатно на месяц, потом платно","Отказываем без вариантов"],correct:1,block:"Тактика"},
+{q:"У клиента стоит Flame Moscow. Как вы о них скажете?",type:"choice",opts:["«У них слабый состав, мы лучше»","«Класс, знаем ребят, чудесные. Хотим предложить экономический интерес»","«Они дешёвые, мы премиум»","«Никогда не слышали»"],correct:1,block:"Тактика"},
+{q:"Назовите 5 точек входа в объект. По каждой — способ найти контакт.",type:"text",answer:"Закупщик (прозвон), директор по маркетингу (LinkedIn), АХО (ножками), собственник (выставки), SMM (Instagram DM)",block:"Тактика"},
+{q:"Какая главная задача первого холодного звонка ЛПРу?",type:"choice",opts:["Продать продукт по телефону","Отправить прайс на почту","Договориться о следующем звонке или видеовстрече","Рассказать весь ассортимент"],correct:2,block:"Тактика"},
+{q:"Клиент: «Мы хотим натуральную косметику без химии». Ваш ответ?",type:"choice",opts:["«У нас всё натуральное»","«Мы парфюмированная категория — отдельный сегмент. Сравнивать корректно только с парфюмированными»","«У нас тоже натуральная, только с ароматом»","«Химии нет, только французские отдушки»"],correct:1,block:"Позиционирование"},
+{q:"Клиент в Instagram просит прайс. Как отправить ссылку?",type:"choice",opts:["Скриншотами каждой страницы","Загрузить PDF на диск Битрикс24 → публичная короткая ссылка","Отправить файл через WhatsApp","Сказать «зайдите на сайт»"],correct:1,block:"Позиционирование"}
+];
+
+var quizState={current:0,score:0,answers:[],lifelines:{5050:true,phone:true,audience:true},timer:null,timeLeft:120,isAutoLaunch:false,startTime:null};
+
+function playTone(freq,dur,vol){try{var a=new(window.AudioContext||window.webkitAudioContext)();var o=a.createOscillator();var g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=freq;g.gain.value=vol||0.05;o.start();o.stop(a.currentTime+(dur||0.1))}catch(e){}}
+function playCorrect(){playTone(523,0.1,0.06);setTimeout(function(){playTone(659,0.1,0.06)},100);setTimeout(function(){playTone(784,0.15,0.06)},200)}
+function playWrong(){playTone(300,0.2,0.06);setTimeout(function(){playTone(250,0.3,0.06)},150)}
+function playTick(){playTone(1000,0.02,0.02)}
+function playStart(){playTone(440,0.1,0.05);setTimeout(function(){playTone(554,0.1,0.05)},120);setTimeout(function(){playTone(659,0.1,0.05)},240);setTimeout(function(){playTone(880,0.2,0.05)},360)}
+
+function startQuiz(auto){
+  quizState={current:0,score:0,answers:[],lifelines:{5050:true,phone:true,audience:true},timer:null,timeLeft:120,isAutoLaunch:!!auto,startTime:Date.now()};
+  document.getElementById('quiz-overlay').style.display='block';
+  document.getElementById('quiz-result').style.display='none';
+  document.getElementById('quiz-container').style.display='flex';
+  document.getElementById('quiz-close-btn').style.display=auto?'none':'block';
+  document.getElementById('ll-5050').style.opacity='1';document.getElementById('ll-5050').style.textDecoration='none';
+  document.getElementById('ll-phone').style.opacity='1';document.getElementById('ll-phone').style.textDecoration='none';
+  document.getElementById('ll-audience').style.opacity='1';document.getElementById('ll-audience').style.textDecoration='none';
+  renderDots();renderQuestion();playStart();
+  if(auto){setTimeout(function(){document.getElementById('quiz-close-btn').style.display='block'},1800000)}
+}
+function closeQuiz(){document.getElementById('quiz-overlay').style.display='none';if(quizState.timer)clearInterval(quizState.timer)}
+function renderDots(){var d=document.getElementById('quiz-dots');d.innerHTML='';for(var i=0;i<quizData.length;i++){var dot=document.createElement('div');dot.style.cssText='width:10px;height:10px;border-radius:50%;border:1px solid rgba(176,170,160,0.3);';if(i<quizState.current){dot.style.background=quizState.answers[i]?'#4CAF50':'#e57373';dot.style.borderColor='transparent'}if(i===quizState.current){dot.style.background='#B0AAA0';dot.style.animation='pulse 1s infinite';dot.style.borderColor='#B0AAA0'}d.appendChild(dot)}}
+function startTimer(){quizState.timeLeft=120;if(quizState.timer)clearInterval(quizState.timer);updateTimerDisplay();quizState.timer=setInterval(function(){quizState.timeLeft--;updateTimerDisplay();if(quizState.timeLeft<=30)playTick();if(quizState.timeLeft<=0){clearInterval(quizState.timer);quizState.answers.push(false);quizState.current++;if(quizState.current<quizData.length){renderQuestion()}else{showResult()}}},1000)}
+function updateTimerDisplay(){var m=Math.floor(quizState.timeLeft/60);var s=quizState.timeLeft%60;document.getElementById('quiz-timer-text').textContent=m+':'+(s<10?'0':'')+s;var pct=(1-quizState.timeLeft/120)*226;document.getElementById('quiz-timer-circle').setAttribute('stroke-dashoffset',pct);document.getElementById('quiz-timer-circle').setAttribute('stroke',quizState.timeLeft<=30?'#e57373':'#B0AAA0');document.getElementById('quiz-timer-text').style.color=quizState.timeLeft<=30?'#e57373':'#F0EBE0'}
+
+function renderQuestion(){
+  var q=quizData[quizState.current];
+  document.getElementById('quiz-progress-text').textContent='Вопрос '+(quizState.current+1)+' из '+quizData.length+' · '+q.block;
+  document.getElementById('quiz-question').textContent=q.q;
+  document.getElementById('quiz-lifeline-result').textContent='';
+  var ans=document.getElementById('quiz-answers');
+  var ta=document.getElementById('quiz-textarea-wrap');
+  if(q.type==='choice'){
+    ans.style.display='flex';ta.style.display='none';ans.innerHTML='';
+    q.opts.forEach(function(o,i){
+      var b=document.createElement('button');
+      b.textContent=String.fromCharCode(65+i)+') '+o;
+      b.style.cssText='padding:14px 20px;background:rgba(176,170,160,0.06);border:1px solid rgba(176,170,160,0.15);border-radius:8px;color:#F0EBE0;font-size:14px;cursor:pointer;text-align:left;transition:all 0.2s;transform:skewX(-2deg);font-family:Space Grotesk,sans-serif';
+      b.onmouseenter=function(){if(!this.dataset.locked)this.style.background='rgba(176,170,160,0.15)'};
+      b.onmouseleave=function(){if(!this.dataset.locked)this.style.background='rgba(176,170,160,0.06)'};
+      b.onclick=function(){selectAnswer(i)};
+      b.id='quiz-opt-'+i;
+      ans.appendChild(b);
+    });
+  }else{
+    ans.style.display='none';ta.style.display='block';
+    document.getElementById('quiz-textarea').value='';
+  }
+  renderDots();startTimer();
+}
+
+function selectAnswer(idx){
+  if(quizState.timer)clearInterval(quizState.timer);
+  var q=quizData[quizState.current];
+  var correct=idx===q.correct;
+  quizState.answers.push(correct);
+  if(correct)quizState.score++;
+  playTone(440,0.1,0.05);
+  var btns=document.getElementById('quiz-answers').children;
+  for(var i=0;i<btns.length;i++){btns[i].dataset.locked='1';btns[i].style.cursor='default'}
+  btns[q.correct].style.background='rgba(76,175,80,0.3)';btns[q.correct].style.borderColor='#4CAF50';
+  if(!correct&&idx>=0){btns[idx].style.background='rgba(229,115,115,0.3)';btns[idx].style.borderColor='#e57373';playWrong()}else{playCorrect()}
+  setTimeout(function(){quizState.current++;if(quizState.current<quizData.length){renderQuestion()}else{showResult()}},1500);
+}
+function submitTextAnswer(){
+  if(quizState.timer)clearInterval(quizState.timer);
+  var v=document.getElementById('quiz-textarea').value.trim();
+  quizState.answers.push(v.length>10);
+  if(v.length>10)quizState.score++;
+  playTone(440,0.1,0.05);
+  setTimeout(function(){quizState.current++;if(quizState.current<quizData.length){renderQuestion()}else{showResult()}},800);
+}
+
+function useLifeline(type){
+  var q=quizData[quizState.current];
+  if(q.type!=='choice'&&type==='5050')return;
+  if(!quizState.lifelines[type])return;
+  quizState.lifelines[type]=false;
+  var btn=document.getElementById('ll-'+(type==='5050'?'5050':type));
+  btn.style.opacity='0.3';btn.style.textDecoration='line-through';
+  var lr=document.getElementById('quiz-lifeline-result');
+  if(type==='5050'){
+    var opts=document.getElementById('quiz-answers').children;
+    var remove=[];for(var i=0;i<opts.length;i++){if(i!==q.correct)remove.push(i)}
+    remove.sort(function(){return Math.random()-0.5});
+    for(var j=0;j<2;j++){opts[remove[j]].style.opacity='0.15';opts[remove[j]].style.pointerEvents='none'}
+    lr.textContent='Убрали два неправильных варианта';playTone(600,0.15,0.05);
+  }else if(type==='phone'){
+    var isRight=Math.random()<0.8;
+    var friendAnswer=isRight?String.fromCharCode(65+q.correct):String.fromCharCode(65+((q.correct+1)%q.opts.length));
+    lr.textContent='📞 Друг считает, что правильный ответ — '+friendAnswer;playTone(500,0.1,0.05);
+  }else if(type==='audience'){
+    var pcts=[];var total=100;
+    for(var k=0;k<q.opts.length;k++){
+      if(k===q.correct){var p=50+Math.floor(Math.random()*20);pcts.push(p);total-=p}
+      else{var p2=Math.floor(Math.random()*(total/(q.opts.length-k)));pcts.push(p2);total-=p2}
+    }
+    var txt='👥 Зал: ';for(var m=0;m<pcts.length;m++){txt+=String.fromCharCode(65+m)+':'+pcts[m]+'% '}
+    lr.textContent=txt;playTone(400,0.1,0.05);
+  }
+}
+
+function showResult(){
+  if(quizState.timer)clearInterval(quizState.timer);
+  document.getElementById('quiz-container').style.display='none';
+  document.getElementById('quiz-result').style.display='block';
+  document.getElementById('quiz-close-btn').style.display='block';
+  var pct=Math.round(quizState.score/quizData.length*100);
+  var emoji=pct>=90?'🏆':pct>=70?'🎯':pct>=50?'📚':'💪';
+  var title=pct>=90?'Эксперт Asense!':pct>=70?'Хороший результат':pct>=50?'Есть над чем поработать':'Нужно подучить материал';
+  document.getElementById('quiz-result-emoji').textContent=emoji;
+  document.getElementById('quiz-result-title').textContent=title;
+  document.getElementById('quiz-result-subtitle').textContent=quizState.score+' из '+quizData.length+' правильных ('+pct+'%)';
+  var elapsed=Math.round((Date.now()-quizState.startTime)/1000);
+  var em=Math.floor(elapsed/60);var es=elapsed%60;
+  document.getElementById('quiz-result-stats').textContent='Время: '+em+' мин '+es+' сек';
+  if(pct>=90){playTone(523,0.1);setTimeout(function(){playTone(659,0.1)},100);setTimeout(function(){playTone(784,0.1)},200);setTimeout(function(){playTone(1047,0.3)},300)}
+  // Save result to Supabase
+  try{
+    var user=localStorage.getItem('asense_user')||'unknown';
+    fetch('https://mtotltoanudwuxbvhejl.supabase.co/rest/v1/ai_knowledge',{method:'POST',headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10b3RsdG9hbnVkd3V4YnZoZWpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Njk3OTAsImV4cCI6MjA5NjE0NTc5MH0.Gpl8skzkvSmUY3cNiPO0IQbgvhyLjFvMOvs5Spi1Xro','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10b3RsdG9hbnVkd3V4YnZoZWpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Njk3OTAsImV4cCI6MjA5NjE0NTc5MH0.Gpl8skzkvSmUY3cNiPO0IQbgvhyLjFvMOvs5Spi1Xro'},body:JSON.stringify({category:'quiz_result',title:'Тест '+user+' '+new Date().toLocaleDateString('ru'),content:user+': '+quizState.score+'/'+quizData.length+' ('+pct+'%) за '+em+'м'+es+'с'})})
+  }catch(e){}
+}
+
+// Auto-launch: Monday 29.06.2026 at 11:00 Moscow
+(function(){
+  function checkAutoQuiz(){
+    var now=new Date();
+    var msk=new Date(now.toLocaleString('en-US',{timeZone:'Europe/Moscow'}));
+    if(msk.getFullYear()===2026&&msk.getMonth()===5&&msk.getDate()===29&&msk.getHours()>=11&&msk.getHours()<12){
+      if(!sessionStorage.getItem('quiz_auto_launched')){
+        sessionStorage.setItem('quiz_auto_launched','1');
+        startQuiz(true);
+      }
+    }
+  }
+  setTimeout(checkAutoQuiz,3000);
+  setInterval(checkAutoQuiz,60000);
+})();
+
 </script>
 </body>
 </html>
