@@ -3389,45 +3389,6 @@ function printKP(){
 </style></head><body>
   ${kp.outerHTML}
   <button class="print-btn" onclick="window.print()">Печать / Сохранить PDF</button>
-  
-<!-- QUIZ OVERLAY -->
-<div id="quiz-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:radial-gradient(ellipse at center,#1a1a3e 0%,#0a0a0a 70%);overflow-y:auto">
-<div id="quiz-container" style="max-width:700px;margin:0 auto;padding:20px;min-height:100vh;display:flex;flex-direction:column;justify-content:center">
-  <div id="quiz-header" style="text-align:center;margin-bottom:20px">
-    <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(176,170,160,0.4);margin-bottom:8px">ТЕСТ НА ЗНАНИЯ</div>
-    <div style="font-size:22px;font-weight:600;color:#F0EBE0;font-family:'Space Grotesk',sans-serif">Asénse</div>
-    <div id="quiz-progress-text" style="font-size:13px;color:rgba(176,170,160,0.5);margin-top:8px">Вопрос 1 из 21</div>
-  </div>
-  <div id="quiz-timer-wrap" style="text-align:center;margin-bottom:20px">
-    <svg width="80" height="80" viewBox="0 0 80 80" id="quiz-timer-svg">
-      <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(176,170,160,0.1)" stroke-width="3"/>
-      <circle id="quiz-timer-circle" cx="40" cy="40" r="36" fill="none" stroke="#B0AAA0" stroke-width="3" stroke-dasharray="226" stroke-dashoffset="0" transform="rotate(-90 40 40)" style="transition:stroke-dashoffset 1s linear"/>
-    </svg>
-    <div id="quiz-timer-text" style="margin-top:-58px;font-size:24px;font-weight:600;color:#F0EBE0;height:46px;line-height:46px">2:00</div>
-  </div>
-  <div id="quiz-question" style="text-align:center;font-size:16px;color:#F0EBE0;line-height:1.6;margin-bottom:24px;padding:0 12px"></div>
-  <div id="quiz-answers" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px"></div>
-  <div id="quiz-textarea-wrap" style="display:none;margin-bottom:20px">
-    <textarea id="quiz-textarea" rows="4" style="width:100%;background:rgba(176,170,160,0.05);border:1px solid rgba(176,170,160,0.2);border-radius:12px;color:#F0EBE0;font-size:14px;padding:12px;resize:none;font-family:'Space Grotesk',sans-serif" placeholder="Напишите ваш ответ..."></textarea>
-    <button onclick="submitTextAnswer()" style="margin-top:10px;width:100%;padding:12px;background:#6F6A65;color:#F0EBE0;border:none;border-radius:8px;font-size:14px;cursor:pointer">Ответить</button>
-  </div>
-  <div id="quiz-lifelines" style="display:flex;justify-content:center;gap:16px;margin-bottom:16px">
-    <button onclick="useLifeline('5050')" id="ll-5050" style="width:48px;height:48px;border-radius:50%;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.3);color:#F0EBE0;font-size:12px;cursor:pointer;font-weight:600">50:50</button>
-    <button onclick="useLifeline('phone')" id="ll-phone" style="width:48px;height:48px;border-radius:50%;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.3);color:#F0EBE0;font-size:16px;cursor:pointer">📞</button>
-    <button onclick="useLifeline('audience')" id="ll-audience" style="width:48px;height:48px;border-radius:50%;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.3);color:#F0EBE0;font-size:16px;cursor:pointer">👥</button>
-  </div>
-  <div id="quiz-lifeline-result" style="text-align:center;font-size:13px;color:rgba(176,170,160,0.6);margin-bottom:12px;min-height:20px"></div>
-  <div id="quiz-dots" style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:16px"></div>
-</div>
-<div id="quiz-result" style="display:none;text-align:center;padding:40px 20px">
-  <div style="font-size:48px;margin-bottom:16px" id="quiz-result-emoji"></div>
-  <div style="font-size:22px;font-weight:600;color:#F0EBE0;margin-bottom:8px" id="quiz-result-title"></div>
-  <div style="font-size:16px;color:rgba(176,170,160,0.6);margin-bottom:24px" id="quiz-result-subtitle"></div>
-  <div id="quiz-result-stats" style="font-size:14px;color:rgba(176,170,160,0.5);margin-bottom:32px"></div>
-  <button onclick="closeQuiz()" style="padding:14px 40px;background:#6F6A65;color:#F0EBE0;border:none;border-radius:8px;font-size:16px;cursor:pointer">Закрыть</button>
-</div>
-<button id="quiz-close-btn" onclick="closeQuiz()" style="display:none;position:fixed;top:16px;right:16px;z-index:100000;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.2);color:#F0EBE0;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer">✕</button>
-</div>
 </body></html>`);
   w.document.close();
 }
@@ -5651,6 +5612,45 @@ function showResult(){
 
 window.startQuiz=startQuiz;window.closeQuiz=closeQuiz;
 </script>
+
+<!-- QUIZ OVERLAY -->
+<div id="quiz-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:radial-gradient(ellipse at center,#1a1a3e 0%,#0a0a0a 70%);overflow-y:auto">
+<div id="quiz-container" style="max-width:700px;margin:0 auto;padding:20px;min-height:100vh;display:flex;flex-direction:column;justify-content:center">
+  <div id="quiz-header" style="text-align:center;margin-bottom:20px">
+    <div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:rgba(176,170,160,0.4);margin-bottom:8px">ТЕСТ НА ЗНАНИЯ</div>
+    <div style="font-size:22px;font-weight:600;color:#F0EBE0;font-family:'Space Grotesk',sans-serif">Asénse</div>
+    <div id="quiz-progress-text" style="font-size:13px;color:rgba(176,170,160,0.5);margin-top:8px">Вопрос 1 из 21</div>
+  </div>
+  <div id="quiz-timer-wrap" style="text-align:center;margin-bottom:20px">
+    <svg width="80" height="80" viewBox="0 0 80 80" id="quiz-timer-svg">
+      <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(176,170,160,0.1)" stroke-width="3"/>
+      <circle id="quiz-timer-circle" cx="40" cy="40" r="36" fill="none" stroke="#B0AAA0" stroke-width="3" stroke-dasharray="226" stroke-dashoffset="0" transform="rotate(-90 40 40)" style="transition:stroke-dashoffset 1s linear"/>
+    </svg>
+    <div id="quiz-timer-text" style="margin-top:-58px;font-size:24px;font-weight:600;color:#F0EBE0;height:46px;line-height:46px">2:00</div>
+  </div>
+  <div id="quiz-question" style="text-align:center;font-size:16px;color:#F0EBE0;line-height:1.6;margin-bottom:24px;padding:0 12px"></div>
+  <div id="quiz-answers" style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px"></div>
+  <div id="quiz-textarea-wrap" style="display:none;margin-bottom:20px">
+    <textarea id="quiz-textarea" rows="4" style="width:100%;background:rgba(176,170,160,0.05);border:1px solid rgba(176,170,160,0.2);border-radius:12px;color:#F0EBE0;font-size:14px;padding:12px;resize:none;font-family:'Space Grotesk',sans-serif" placeholder="Напишите ваш ответ..."></textarea>
+    <button onclick="submitTextAnswer()" style="margin-top:10px;width:100%;padding:12px;background:#6F6A65;color:#F0EBE0;border:none;border-radius:8px;font-size:14px;cursor:pointer">Ответить</button>
+  </div>
+  <div id="quiz-lifelines" style="display:flex;justify-content:center;gap:16px;margin-bottom:16px">
+    <button onclick="useLifeline('5050')" id="ll-5050" style="width:48px;height:48px;border-radius:50%;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.3);color:#F0EBE0;font-size:12px;cursor:pointer;font-weight:600">50:50</button>
+    <button onclick="useLifeline('phone')" id="ll-phone" style="width:48px;height:48px;border-radius:50%;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.3);color:#F0EBE0;font-size:16px;cursor:pointer">📞</button>
+    <button onclick="useLifeline('audience')" id="ll-audience" style="width:48px;height:48px;border-radius:50%;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.3);color:#F0EBE0;font-size:16px;cursor:pointer">👥</button>
+  </div>
+  <div id="quiz-lifeline-result" style="text-align:center;font-size:13px;color:rgba(176,170,160,0.6);margin-bottom:12px;min-height:20px"></div>
+  <div id="quiz-dots" style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:16px"></div>
+</div>
+<div id="quiz-result" style="display:none;text-align:center;padding:40px 20px">
+  <div style="font-size:48px;margin-bottom:16px" id="quiz-result-emoji"></div>
+  <div style="font-size:22px;font-weight:600;color:#F0EBE0;margin-bottom:8px" id="quiz-result-title"></div>
+  <div style="font-size:16px;color:rgba(176,170,160,0.6);margin-bottom:24px" id="quiz-result-subtitle"></div>
+  <div id="quiz-result-stats" style="font-size:14px;color:rgba(176,170,160,0.5);margin-bottom:32px"></div>
+  <button onclick="closeQuiz()" style="padding:14px 40px;background:#6F6A65;color:#F0EBE0;border:none;border-radius:8px;font-size:16px;cursor:pointer">Закрыть</button>
+</div>
+<button id="quiz-close-btn" onclick="closeQuiz()" style="display:none;position:fixed;top:16px;right:16px;z-index:100000;background:rgba(176,170,160,0.1);border:1px solid rgba(176,170,160,0.2);color:#F0EBE0;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer">✕</button>
+</div>
 
 </body>
 </html>
