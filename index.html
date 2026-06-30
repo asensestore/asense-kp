@@ -5522,45 +5522,10 @@ function playStart(){
   setTimeout(function(){playTone(55,0.8,0.06,'sine')},950);
 }
 
-// Фоновый луп "Миллионер" во время вопроса
 var _bgNodes=[];
-function startBgMusic(){
-  stopBgMusic();
-  try{
-    var a=getAC();
-    // Пульсирующий бас-дрон
-    var bass=a.createOscillator();var bassG=a.createGain();
-    bass.type='sine';bass.frequency.value=55;
-    bassG.gain.value=0.04;bass.connect(bassG);bassG.connect(a.destination);bass.start();
-    // Средний напряжённый тон
-    var mid=a.createOscillator();var midG=a.createGain();
-    mid.type='triangle';mid.frequency.value=220;
-    midG.gain.value=0.02;mid.connect(midG);midG.connect(a.destination);mid.start();
-    // LFO пульсация громкости баса
-    var lfo=a.createOscillator();var lfoG=a.createGain();
-    lfo.frequency.value=1.5;lfoG.gain.value=0.025;
-    lfo.connect(lfoG);lfoG.connect(bassG.gain);lfo.start();
-    _bgNodes=[bass,mid,lfo];
-  }catch(e){}
-}
-function stopBgMusic(){
-  _bgNodes.forEach(function(n){try{n.stop();}catch(e){}});
-  _bgNodes=[];
-}
-function startUrgentMusic(){
-  // Когда <30 сек — более напряжённый темп
-  stopBgMusic();
-  try{
-    var a=getAC();
-    var o=a.createOscillator();var g=a.createGain();
-    o.type='triangle';o.frequency.value=110;
-    g.gain.value=0.03;o.connect(g);g.connect(a.destination);o.start();
-    var lfo=a.createOscillator();var lg=a.createGain();
-    lfo.frequency.value=3;lg.gain.value=0.02;
-    lfo.connect(lg);lg.connect(g.gain);lfo.start();
-    _bgNodes=[o,lfo];
-  }catch(e){}
-}
+function startBgMusic(){}
+function stopBgMusic(){_bgNodes.forEach(function(n){try{n.stop();}catch(e){}});_bgNodes=[];}
+function startUrgentMusic(){}
 // ===== END AUDIO ENGINE =====
 
 var OWNER_TG_ID = '847709370';
