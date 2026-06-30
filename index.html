@@ -461,8 +461,8 @@ tr.kp-free td{background:#E8F5E9;color:#2E7D32}
   <div class="nav-item" onclick="go('profile')" id="nav-profile">👤 Мой профиль</div>
 <div class="nav-item" onclick="go('ai')" id="nav-ai">🤖 ИИ-советник</div>
   <div class="nav-item" onclick="go('training')" id="nav-training">📖 Обучение</div>
-  <button onclick="startQuiz()" style="display:block;width:calc(100% - 16px);margin:8px 8px;padding:10px 16px;background:rgba(176,170,160,0.08);border:1px solid rgba(176,170,160,0.15);border-radius:8px;color:#B0AAA0;cursor:pointer;font-size:13px;font-family:inherit;text-align:left">🎯 Тест на знания</button>
-    <div class="sidebar-footer">
+  <a href="javascript:void(0)" onclick="startQuiz()" class="nav-item" id="nav-quiz" style="cursor:pointer;color:rgba(255,255,255,0.55);text-decoration:none;display:flex">🎯 Тест на знания</a>
+  <div class="sidebar-footer">
     <div id="sidebar-user" style="color:var(--gold);font-weight:500;margin-bottom:6px;font-size:12px"></div>
     ООО «АСЕНС»<br>
     commerce@asense.store<br>
@@ -5651,5 +5651,6 @@ function showResult(){
 
 window.startQuiz=startQuiz;window.closeQuiz=closeQuiz;
 </script>
+
 </body>
 </html>
