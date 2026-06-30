@@ -1,7 +1,7 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') { res.status(200).send('ok'); return; }
 
-  const { name, score, total, pct, time, date, emoji } = req.body;
+  const { name, score, total, pct, time, date, emoji, mistakes } = req.body;
 
   const TG_TOKEN = process.env.TG_BOT_TOKEN;
   const OWNER_CHAT_ID = process.env.OWNER_TG_ID || '847709370';
@@ -11,7 +11,16 @@ export default async function handler(req, res) {
     return;
   }
 
-  const msg = `${emoji} *Результат теста*\n\n👤 *${name}*\n✅ ${score} из ${total} правильных (${pct}%)\n⏱ ${time}\n📅 ${date}`;
+  let msg = `${emoji} *Результат теста*\n\n👤 *${name}*\n✅ ${score} из ${total} правильных (${pct}%)\n⏱ ${time}\n📅 ${date}`;
+
+  if (mistakes && mistakes.length > 0) {
+    msg += `\n\n❌ *Ошибки (${mistakes.length}):*`;
+    mistakes.forEach((m, i) => {
+      msg += `\n\n${i + 1}. ${m.q}\n✅ ${m.correct}\n❌ ${m.chosen}`;
+    });
+  } else {
+    msg += '\n\n🎯 Все ответы верные!';
+  }
 
   try {
     await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {

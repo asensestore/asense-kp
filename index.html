@@ -5550,7 +5550,7 @@ function startQuiz(auto){
   // Спросить имя перед началом
   var displayName=user&&user!=='admin'?user:'';
   showQuizNamePrompt(displayName,function(name){
-    quizState={current:0,score:0,answers:[],lifelines:{5050:true,phone:true,audience:true},timer:null,timeLeft:120,isAutoLaunch:!!auto,startTime:Date.now(),playerName:name};
+    quizState={current:0,score:0,answers:[],mistakes:[],lifelines:{5050:true,phone:true,audience:true},timer:null,timeLeft:120,isAutoLaunch:!!auto,startTime:Date.now(),playerName:name};
     document.getElementById('quiz-overlay').style.display='block';
     document.getElementById('quiz-result').style.display='none';
     document.getElementById('quiz-container').style.display='flex';
@@ -5662,6 +5662,7 @@ function selectAnswer(idx){
   var q=quizData[quizState.current];
   var correct=idx===q.correct;
   quizState.answers.push(correct);
+  if(!correct)quizState.mistakes.push({q:q.q,correct:q.opts[q.correct],chosen:idx>=0?q.opts[idx]:'(время вышло)'});
   if(correct)quizState.score++;
   playTone(440,0.1,0.05);
   var btns=document.getElementById('quiz-answers').children;
@@ -5674,8 +5675,10 @@ function submitTextAnswer(){
   if(quizState.timer)clearInterval(quizState.timer);
   stopBgMusic();
   var v=document.getElementById('quiz-textarea').value.trim();
-  quizState.answers.push(v.length>10);
-  if(v.length>10)quizState.score++;
+  var correct=v.length>10;
+  quizState.answers.push(correct);
+  if(!correct){var q=quizData[quizState.current];quizState.mistakes.push({q:q.q,correct:q.answer,chosen:v||'(пусто)'});}
+  if(correct)quizState.score++;
   playTone(440,0.1,0.05);
   setTimeout(function(){quizState.current++;if(quizState.current<quizData.length){renderQuestion()}else{showResult()}},800);
 }
@@ -5731,10 +5734,11 @@ function showResult(){
   if(!isAdmin()){
     localStorage.setItem(quizDoneKey(),JSON.stringify({score:quizState.score,total:quizData.length,pct:pct,date:dateStr,time:timeStr,name:playerName}));
   }
-  // Отправить результат через серверный API (TG ID подставится в api/quiz-result.js)
+  // Отправить результат через серверный API
   try{
     var emoji2=pct>=90?'🏆':pct>=70?'🎯':pct>=50?'📚':'💪';
-    fetch('/api/quiz-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:playerName,score:quizState.score,total:quizData.length,pct:pct,time:timeStr,date:dateStr,emoji:emoji2})});
+    var mistakesPayload=(quizState.mistakes||[]).map(function(m){return {q:m.q,correct:m.correct,chosen:m.chosen};});
+    fetch('/api/quiz-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:playerName,score:quizState.score,total:quizData.length,pct:pct,time:timeStr,date:dateStr,emoji:emoji2,mistakes:mistakesPayload})});
   }catch(e){}
 }
 
