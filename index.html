@@ -5473,11 +5473,95 @@ var quizData=[
 
 var quizState={current:0,score:0,answers:[],lifelines:{5050:true,phone:true,audience:true},timer:null,timeLeft:120,isAutoLaunch:false,startTime:null};
 
-function playTone(freq,dur,vol){try{var a=new(window.AudioContext||window.webkitAudioContext)();var o=a.createOscillator();var g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=freq;g.gain.value=vol||0.05;o.start();o.stop(a.currentTime+(dur||0.1))}catch(e){}}
-function playCorrect(){playTone(523,0.1,0.06);setTimeout(function(){playTone(659,0.1,0.06)},100);setTimeout(function(){playTone(784,0.15,0.06)},200)}
-function playWrong(){playTone(300,0.2,0.06);setTimeout(function(){playTone(250,0.3,0.06)},150)}
-function playTick(){playTone(1000,0.02,0.02)}
-function playStart(){playTone(440,0.1,0.05);setTimeout(function(){playTone(554,0.1,0.05)},120);setTimeout(function(){playTone(659,0.1,0.05)},240);setTimeout(function(){playTone(880,0.2,0.05)},360)}
+// ===== AUDIO ENGINE =====
+var _AC=null;
+function getAC(){if(!_AC)_AC=new(window.AudioContext||window.webkitAudioContext)();return _AC;}
+function playTone(freq,dur,vol,type){
+  try{
+    var a=getAC();var o=a.createOscillator();var g=a.createGain();
+    o.type=type||'sine';o.connect(g);g.connect(a.destination);
+    o.frequency.value=freq;g.gain.setValueAtTime(vol||0.05,a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+(dur||0.1));
+    o.start();o.stop(a.currentTime+(dur||0.1)+0.05);
+  }catch(e){}
+}
+function playCorrect(){
+  // Фанфара — восходящий мажорный аккорд
+  var t=[[523,0,'sine'],[659,0.12,'sine'],[784,0.24,'sine'],[1047,0.38,'sine'],[784,0.55,'triangle'],[1047,0.65,'sine']];
+  t.forEach(function(n){setTimeout(function(){playTone(n[0],0.18,0.08,n[2])},n[1]*1000)});
+}
+function playWrong(){
+  // Падение вниз
+  try{
+    var a=getAC();var o=a.createOscillator();var g=a.createGain();
+    o.connect(g);g.connect(a.destination);o.type='sawtooth';
+    o.frequency.setValueAtTime(400,a.currentTime);
+    o.frequency.exponentialRampToValueAtTime(80,a.currentTime+0.5);
+    g.gain.setValueAtTime(0.07,a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.5);
+    o.start();o.stop(a.currentTime+0.55);
+  }catch(e){}
+}
+function playTick(){
+  // Тикание — короткий резкий щелчок
+  try{
+    var a=getAC();var b=a.createBuffer(1,a.sampleRate*0.04,a.sampleRate);
+    var d=b.getChannelData(0);
+    for(var i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(a.sampleRate*0.008));
+    var s=a.createBufferSource();s.buffer=b;
+    var g=a.createGain();g.gain.value=0.15;
+    s.connect(g);g.connect(a.destination);s.start();
+  }catch(e){playTone(1200,0.03,0.08,'square');}
+}
+function playStart(){
+  // Заставка "Миллионер" — нарастающая тема
+  var notes=[[220,0,0.04],[277,0.15,0.04],[330,0.3,0.04],[440,0.45,0.06],[554,0.6,0.06],[659,0.75,0.06],[880,0.95,0.1]];
+  notes.forEach(function(n){setTimeout(function(){playTone(n[0],0.2,n[2],'triangle')},n[1]*1000)});
+  // Низкий фоновый удар
+  setTimeout(function(){playTone(55,0.8,0.06,'sine')},0);
+  setTimeout(function(){playTone(55,0.8,0.06,'sine')},950);
+}
+
+// Фоновый луп "Миллионер" во время вопроса
+var _bgNodes=[];
+function startBgMusic(){
+  stopBgMusic();
+  try{
+    var a=getAC();
+    // Пульсирующий бас-дрон
+    var bass=a.createOscillator();var bassG=a.createGain();
+    bass.type='sine';bass.frequency.value=55;
+    bassG.gain.value=0.04;bass.connect(bassG);bassG.connect(a.destination);bass.start();
+    // Средний напряжённый тон
+    var mid=a.createOscillator();var midG=a.createGain();
+    mid.type='triangle';mid.frequency.value=220;
+    midG.gain.value=0.02;mid.connect(midG);midG.connect(a.destination);mid.start();
+    // LFO пульсация громкости баса
+    var lfo=a.createOscillator();var lfoG=a.createGain();
+    lfo.frequency.value=1.5;lfoG.gain.value=0.025;
+    lfo.connect(lfoG);lfoG.connect(bassG.gain);lfo.start();
+    _bgNodes=[bass,mid,lfo];
+  }catch(e){}
+}
+function stopBgMusic(){
+  _bgNodes.forEach(function(n){try{n.stop();}catch(e){}});
+  _bgNodes=[];
+}
+function startUrgentMusic(){
+  // Когда <30 сек — более напряжённый темп
+  stopBgMusic();
+  try{
+    var a=getAC();
+    var o=a.createOscillator();var g=a.createGain();
+    o.type='triangle';o.frequency.value=110;
+    g.gain.value=0.03;o.connect(g);g.connect(a.destination);o.start();
+    var lfo=a.createOscillator();var lg=a.createGain();
+    lfo.frequency.value=3;lg.gain.value=0.02;
+    lfo.connect(lg);lg.connect(g.gain);lfo.start();
+    _bgNodes=[o,lfo];
+  }catch(e){}
+}
+// ===== END AUDIO ENGINE =====
 
 var OWNER_TG_ID = '847709370';
 
@@ -5515,7 +5599,6 @@ function startQuiz(auto){
 }
 
 function showQuizNamePrompt(currentName,cb){
-  if(currentName&&currentName.length>1){cb(currentName);return;}
   // Отдельный попап поверх всего, не трогает quiz-overlay DOM
   var pop=document.createElement('div');
   pop.id='quiz-name-modal';
@@ -5524,7 +5607,7 @@ function showQuizNamePrompt(currentName,cb){
     +'<div style="font-size:32px;margin-bottom:12px">🎯</div>'
     +'<div style="font-size:18px;font-weight:600;color:#F0EBE0;margin-bottom:6px">Тест на знания Asense</div>'
     +'<div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:24px">Введите ваше имя чтобы начать</div>'
-    +'<input id="quiz-name-input" type="text" placeholder="Ваше имя" maxlength="40" autocomplete="off" style="width:100%;padding:12px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(176,170,160,0.25);border-radius:8px;color:#F0EBE0;font-size:15px;margin-bottom:14px;box-sizing:border-box;font-family:inherit;outline:none">'
+    +'<input id="quiz-name-input" type="text" placeholder="Ваше имя" maxlength="40" autocomplete="off" value="'+(currentName||'')+'" style="width:100%;padding:12px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(176,170,160,0.25);border-radius:8px;color:#F0EBE0;font-size:15px;margin-bottom:14px;box-sizing:border-box;font-family:inherit;outline:none">'
     +'<button id="quiz-name-btn" style="width:100%;padding:13px;background:#6F6A65;color:#F0EBE0;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit">Начать тест →</button>'
     +'<button id="quiz-name-cancel" style="margin-top:10px;background:none;border:none;color:rgba(255,255,255,0.3);font-size:13px;cursor:pointer;width:100%">Отмена</button>'
     +'</div>';
@@ -5560,9 +5643,26 @@ function closeQuiz(){
   document.getElementById('quiz-overlay').style.display='none';
   var nm=document.getElementById('quiz-name-modal');if(nm)nm.remove();
   if(quizState&&quizState.timer)clearInterval(quizState.timer);
+  stopBgMusic();
 }
 function renderDots(){var d=document.getElementById('quiz-dots');d.innerHTML='';for(var i=0;i<quizData.length;i++){var dot=document.createElement('div');dot.style.cssText='width:10px;height:10px;border-radius:50%;border:1px solid rgba(176,170,160,0.3);';if(i<quizState.current){dot.style.background=quizState.answers[i]?'#4CAF50':'#e57373';dot.style.borderColor='transparent'}if(i===quizState.current){dot.style.background='#B0AAA0';dot.style.animation='pulse 1s infinite';dot.style.borderColor='#B0AAA0'}d.appendChild(dot)}}
-function startTimer(){quizState.timeLeft=120;if(quizState.timer)clearInterval(quizState.timer);updateTimerDisplay();quizState.timer=setInterval(function(){quizState.timeLeft--;updateTimerDisplay();if(quizState.timeLeft<=30)playTick();if(quizState.timeLeft<=0){clearInterval(quizState.timer);quizState.answers.push(false);quizState.current++;if(quizState.current<quizData.length){renderQuestion()}else{showResult()}}},1000)}
+function startTimer(){
+  quizState.timeLeft=120;
+  if(quizState.timer)clearInterval(quizState.timer);
+  updateTimerDisplay();
+  startBgMusic();
+  quizState.timer=setInterval(function(){
+    quizState.timeLeft--;
+    updateTimerDisplay();
+    if(quizState.timeLeft===30){stopBgMusic();startUrgentMusic();}
+    if(quizState.timeLeft<=30)playTick();
+    if(quizState.timeLeft<=0){
+      clearInterval(quizState.timer);stopBgMusic();
+      quizState.answers.push(false);quizState.current++;
+      if(quizState.current<quizData.length){renderQuestion()}else{showResult()}
+    }
+  },1000);
+}
 function updateTimerDisplay(){var m=Math.floor(quizState.timeLeft/60);var s=quizState.timeLeft%60;document.getElementById('quiz-timer-text').textContent=m+':'+(s<10?'0':'')+s;var pct=(1-quizState.timeLeft/120)*226;document.getElementById('quiz-timer-circle').setAttribute('stroke-dashoffset',pct);document.getElementById('quiz-timer-circle').setAttribute('stroke',quizState.timeLeft<=30?'#e57373':'#B0AAA0');document.getElementById('quiz-timer-text').style.color=quizState.timeLeft<=30?'#e57373':'#F0EBE0'}
 
 function renderQuestion(){
@@ -5593,6 +5693,7 @@ function renderQuestion(){
 
 function selectAnswer(idx){
   if(quizState.timer)clearInterval(quizState.timer);
+  stopBgMusic();
   var q=quizData[quizState.current];
   var correct=idx===q.correct;
   quizState.answers.push(correct);
@@ -5606,6 +5707,7 @@ function selectAnswer(idx){
 }
 function submitTextAnswer(){
   if(quizState.timer)clearInterval(quizState.timer);
+  stopBgMusic();
   var v=document.getElementById('quiz-textarea').value.trim();
   quizState.answers.push(v.length>10);
   if(v.length>10)quizState.score++;
