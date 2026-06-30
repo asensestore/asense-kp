@@ -59,6 +59,7 @@ body{font-family:'Space Grotesk','Helvetica Neue',sans-serif;font-size:14px;back
 .splash-closing{animation:splashClose 1s cubic-bezier(0.4,0,0.2,1) both}
 .splash-closing .splash-bg{filter:blur(8px);transition:filter 1s}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @keyframes growBar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 
 
@@ -5478,19 +5479,88 @@ function playWrong(){playTone(300,0.2,0.06);setTimeout(function(){playTone(250,0
 function playTick(){playTone(1000,0.02,0.02)}
 function playStart(){playTone(440,0.1,0.05);setTimeout(function(){playTone(554,0.1,0.05)},120);setTimeout(function(){playTone(659,0.1,0.05)},240);setTimeout(function(){playTone(880,0.2,0.05)},360)}
 
-function startQuiz(auto){
-  quizState={current:0,score:0,answers:[],lifelines:{5050:true,phone:true,audience:true},timer:null,timeLeft:120,isAutoLaunch:!!auto,startTime:Date.now()};
-  document.getElementById('quiz-overlay').style.display='block';
-  document.getElementById('quiz-result').style.display='none';
-  document.getElementById('quiz-container').style.display='flex';
-  document.getElementById('quiz-close-btn').style.display=auto?'none':'block';
-  document.getElementById('ll-5050').style.opacity='1';document.getElementById('ll-5050').style.textDecoration='none';
-  document.getElementById('ll-phone').style.opacity='1';document.getElementById('ll-phone').style.textDecoration='none';
-  document.getElementById('ll-audience').style.opacity='1';document.getElementById('ll-audience').style.textDecoration='none';
-  renderDots();renderQuestion();playStart();
-  if(auto){setTimeout(function(){document.getElementById('quiz-close-btn').style.display='block'},1800000)}
+var OWNER_TG_ID = '847709370';
+
+function isAdmin(){return localStorage.getItem('asense_admin')==='1';}
+
+function quizDoneKey(){
+  var u=localStorage.getItem('asense_user')||'guest';
+  return 'asense_quiz_done_'+u;
 }
-function closeQuiz(){document.getElementById('quiz-overlay').style.display='none';if(quizState.timer)clearInterval(quizState.timer)}
+
+function startQuiz(auto){
+  var user=localStorage.getItem('asense_user')||'';
+  // Если не admin и уже прошёл — показать сохранённый результат
+  if(!isAdmin()){
+    var done=localStorage.getItem(quizDoneKey());
+    if(done){
+      try{var d=JSON.parse(done);showSavedResult(d);}catch(e){}
+      return;
+    }
+  }
+  // Спросить имя перед началом
+  var displayName=user&&user!=='admin'?user:'';
+  showQuizNamePrompt(displayName,function(name){
+    quizState={current:0,score:0,answers:[],lifelines:{5050:true,phone:true,audience:true},timer:null,timeLeft:120,isAutoLaunch:!!auto,startTime:Date.now(),playerName:name};
+    document.getElementById('quiz-overlay').style.display='block';
+    document.getElementById('quiz-result').style.display='none';
+    document.getElementById('quiz-container').style.display='flex';
+    document.getElementById('quiz-close-btn').style.display=auto?'none':'block';
+    document.getElementById('ll-5050').style.opacity='1';document.getElementById('ll-5050').style.textDecoration='none';
+    document.getElementById('ll-phone').style.opacity='1';document.getElementById('ll-phone').style.textDecoration='none';
+    document.getElementById('ll-audience').style.opacity='1';document.getElementById('ll-audience').style.textDecoration='none';
+    renderDots();renderQuestion();playStart();
+    if(auto){setTimeout(function(){document.getElementById('quiz-close-btn').style.display='block'},1800000)}
+  });
+}
+
+function showQuizNamePrompt(currentName,cb){
+  if(currentName&&currentName.length>1){cb(currentName);return;}
+  // Отдельный попап поверх всего, не трогает quiz-overlay DOM
+  var pop=document.createElement('div');
+  pop.id='quiz-name-modal';
+  pop.style.cssText='position:fixed;inset:0;z-index:100001;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;padding:20px';
+  pop.innerHTML='<div style="background:#1a1a18;border-radius:16px;padding:40px 32px;max-width:400px;width:100%;text-align:center">'
+    +'<div style="font-size:32px;margin-bottom:12px">🎯</div>'
+    +'<div style="font-size:18px;font-weight:600;color:#F0EBE0;margin-bottom:6px">Тест на знания Asense</div>'
+    +'<div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:24px">Введите ваше имя чтобы начать</div>'
+    +'<input id="quiz-name-input" type="text" placeholder="Ваше имя" maxlength="40" autocomplete="off" style="width:100%;padding:12px 14px;background:rgba(255,255,255,0.06);border:1px solid rgba(176,170,160,0.25);border-radius:8px;color:#F0EBE0;font-size:15px;margin-bottom:14px;box-sizing:border-box;font-family:inherit;outline:none">'
+    +'<button id="quiz-name-btn" style="width:100%;padding:13px;background:#6F6A65;color:#F0EBE0;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit">Начать тест →</button>'
+    +'<button id="quiz-name-cancel" style="margin-top:10px;background:none;border:none;color:rgba(255,255,255,0.3);font-size:13px;cursor:pointer;width:100%">Отмена</button>'
+    +'</div>';
+  document.body.appendChild(pop);
+  document.getElementById('quiz-name-input').focus();
+  document.getElementById('quiz-name-cancel').onclick=function(){pop.remove();};
+  function proceed(){
+    var n=document.getElementById('quiz-name-input').value.trim();
+    if(!n){document.getElementById('quiz-name-input').style.borderColor='#e57373';return;}
+    pop.remove();
+    cb(n);
+  }
+  document.getElementById('quiz-name-btn').onclick=proceed;
+  document.getElementById('quiz-name-input').onkeydown=function(e){if(e.key==='Enter')proceed();};
+}
+
+function showSavedResult(d){
+  var overlay=document.getElementById('quiz-overlay');
+  overlay.style.display='flex';
+  overlay.style.alignItems='center';
+  overlay.style.justifyContent='center';
+  overlay.innerHTML='<div style="background:#1a1a18;border-radius:16px;padding:40px 32px;max-width:460px;width:90%;text-align:center;position:relative">'
+    +'<button onclick="closeQuiz()" style="position:absolute;top:14px;right:14px;background:none;border:none;color:rgba(255,255,255,0.35);font-size:20px;cursor:pointer">✕</button>'
+    +'<div style="font-size:40px;margin-bottom:12px">'+(d.pct>=90?'🏆':d.pct>=70?'🎯':d.pct>=50?'📚':'💪')+'</div>'
+    +'<div style="font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.3);margin-bottom:8px">ВЫ УЖЕ ПРОШЛИ ТЕСТ</div>'
+    +'<div style="font-size:20px;font-weight:600;color:var(--gold);margin-bottom:4px">'+d.score+' / '+d.total+' правильных</div>'
+    +'<div style="font-size:14px;color:rgba(255,255,255,0.45);margin-bottom:6px">'+d.pct+'%  ·  '+d.date+'</div>'
+    +'<div style="font-size:13px;color:rgba(255,255,255,0.35);margin-bottom:28px">'+d.time+'</div>'
+    +'<div style="font-size:13px;color:rgba(176,170,160,0.5)">Тест можно пройти только один раз.<br>Обратитесь к администратору для сброса.</div>'
+    +'</div>';
+}
+function closeQuiz(){
+  document.getElementById('quiz-overlay').style.display='none';
+  var nm=document.getElementById('quiz-name-modal');if(nm)nm.remove();
+  if(quizState&&quizState.timer)clearInterval(quizState.timer);
+}
 function renderDots(){var d=document.getElementById('quiz-dots');d.innerHTML='';for(var i=0;i<quizData.length;i++){var dot=document.createElement('div');dot.style.cssText='width:10px;height:10px;border-radius:50%;border:1px solid rgba(176,170,160,0.3);';if(i<quizState.current){dot.style.background=quizState.answers[i]?'#4CAF50':'#e57373';dot.style.borderColor='transparent'}if(i===quizState.current){dot.style.background='#B0AAA0';dot.style.animation='pulse 1s infinite';dot.style.borderColor='#B0AAA0'}d.appendChild(dot)}}
 function startTimer(){quizState.timeLeft=120;if(quizState.timer)clearInterval(quizState.timer);updateTimerDisplay();quizState.timer=setInterval(function(){quizState.timeLeft--;updateTimerDisplay();if(quizState.timeLeft<=30)playTick();if(quizState.timeLeft<=0){clearInterval(quizState.timer);quizState.answers.push(false);quizState.current++;if(quizState.current<quizData.length){renderQuestion()}else{showResult()}}},1000)}
 function updateTimerDisplay(){var m=Math.floor(quizState.timeLeft/60);var s=quizState.timeLeft%60;document.getElementById('quiz-timer-text').textContent=m+':'+(s<10?'0':'')+s;var pct=(1-quizState.timeLeft/120)*226;document.getElementById('quiz-timer-circle').setAttribute('stroke-dashoffset',pct);document.getElementById('quiz-timer-circle').setAttribute('stroke',quizState.timeLeft<=30?'#e57373':'#B0AAA0');document.getElementById('quiz-timer-text').style.color=quizState.timeLeft<=30?'#e57373':'#F0EBE0'}
@@ -5587,12 +5657,47 @@ function showResult(){
   var em=Math.floor(elapsed/60);var es=elapsed%60;
   document.getElementById('quiz-result-stats').textContent='Время: '+em+' мин '+es+' сек';
   if(pct>=90){playTone(523,0.1);setTimeout(function(){playTone(659,0.1)},100);setTimeout(function(){playTone(784,0.1)},200);setTimeout(function(){playTone(1047,0.3)},300)}
-  // Save result to Supabase
+  var playerName=quizState.playerName||localStorage.getItem('asense_user')||'unknown';
+  var dateStr=new Date().toLocaleDateString('ru-RU');
+  var timeStr=em+' мин '+es+' сек';
+  // Сохранить результат локально (один раз, не для admin)
+  if(!isAdmin()){
+    localStorage.setItem(quizDoneKey(),JSON.stringify({score:quizState.score,total:quizData.length,pct:pct,date:dateStr,time:timeStr,name:playerName}));
+  }
+  // Отправить результат через серверный API (TG ID подставится в api/quiz-result.js)
   try{
-    var user=localStorage.getItem('asense_user')||'unknown';
-    fetch('https://mtotltoanudwuxbvhejl.supabase.co/rest/v1/ai_knowledge',{method:'POST',headers:{'Content-Type':'application/json','apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10b3RsdG9hbnVkd3V4YnZoZWpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Njk3OTAsImV4cCI6MjA5NjE0NTc5MH0.Gpl8skzkvSmUY3cNiPO0IQbgvhyLjFvMOvs5Spi1Xro','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10b3RsdG9hbnVkd3V4YnZoZWpsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1Njk3OTAsImV4cCI6MjA5NjE0NTc5MH0.Gpl8skzkvSmUY3cNiPO0IQbgvhyLjFvMOvs5Spi1Xro'},body:JSON.stringify({category:'quiz_result',title:'Тест '+user+' '+new Date().toLocaleDateString('ru'),content:user+': '+quizState.score+'/'+quizData.length+' ('+pct+'%) за '+em+'м'+es+'с'})})
+    var emoji2=pct>=90?'🏆':pct>=70?'🎯':pct>=50?'📚':'💪';
+    fetch('/api/quiz-result',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:playerName,score:quizState.score,total:quizData.length,pct:pct,time:timeStr,date:dateStr,emoji:emoji2})});
   }catch(e){}
 }
+
+// Попап "Пройти тест" — показывается сегодня 30.06.2026 один раз за сессию
+(function(){
+  function showQuizPopup(){
+    if(sessionStorage.getItem('quiz_popup_shown'))return;
+    if(localStorage.getItem('asense_quiz_popup_dismissed_20260630'))return;
+    var user=localStorage.getItem('asense_user');
+    if(!user)return;
+    if(!isAdmin()&&localStorage.getItem(quizDoneKey()))return;
+    sessionStorage.setItem('quiz_popup_shown','1');
+    var pop=document.createElement('div');
+    pop.id='quiz-popup-banner';
+    pop.style.cssText='position:fixed;bottom:24px;right:24px;z-index:9998;background:linear-gradient(135deg,#1a1a3e,#0d0d1a);border:1px solid rgba(176,170,160,0.25);border-radius:14px;padding:20px 24px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:slideUp .4s ease';
+    pop.innerHTML='<div style="font-size:22px;margin-bottom:8px">🎯</div>'
+      +'<div style="font-size:14px;font-weight:600;color:#F0EBE0;margin-bottom:4px">Тест на знания</div>'
+      +'<div style="font-size:12px;color:rgba(176,170,160,0.6);margin-bottom:14px">Проверьте знание продуктов,<br>скриптов и тактики продаж</div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<button onclick="document.getElementById(\'quiz-popup-banner\').remove();startQuiz()" style="flex:1;padding:9px;background:#6F6A65;color:#F0EBE0;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Пройти тест</button>'
+      +'<button onclick="localStorage.setItem(\'asense_quiz_popup_dismissed_20260630\',\'1\');document.getElementById(\'quiz-popup-banner\').remove()" style="padding:9px 12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:7px;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;font-family:inherit">✕</button>'
+      +'</div>';
+    document.body.appendChild(pop);
+  }
+  var now=new Date();
+  var msk=new Date(now.toLocaleString('en-US',{timeZone:'Europe/Moscow'}));
+  if(msk.getFullYear()===2026&&msk.getMonth()===5&&msk.getDate()===30){
+    setTimeout(showQuizPopup,4000);
+  }
+})();
 
 // Auto-launch: Monday 29.06.2026 at 11:00 Moscow (without blocking)
 (function(){
