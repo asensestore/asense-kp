@@ -5674,12 +5674,10 @@ function showResult(){
 // Попап "Пройти тест" — показывается сегодня 30.06.2026 один раз за сессию
 (function(){
   function showQuizPopup(){
-    if(sessionStorage.getItem('quiz_popup_shown'))return;
     if(localStorage.getItem('asense_quiz_popup_dismissed_20260630'))return;
     var user=localStorage.getItem('asense_user');
     if(!user)return;
     if(!isAdmin()&&localStorage.getItem(quizDoneKey()))return;
-    sessionStorage.setItem('quiz_popup_shown','1');
     var pop=document.createElement('div');
     pop.id='quiz-popup-banner';
     pop.style.cssText='position:fixed;bottom:24px;right:24px;z-index:9998;background:linear-gradient(135deg,#1a1a3e,#0d0d1a);border:1px solid rgba(176,170,160,0.25);border-radius:14px;padding:20px 24px;max-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:slideUp .4s ease';
